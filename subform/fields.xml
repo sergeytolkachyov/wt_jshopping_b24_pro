@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field name="b24fieldtype" type="list"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE">
+        <option value="standart">PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE_STANDART</option>
+        <option value="custom">PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE_CUSTOM</option>
+    </field>
+
+    <field name="b24fieldstandart" type="list"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_STANDART" showon="b24fieldtype:standart">
+        <option value="TITLE">PLG_WT_JSHOPPING_B24_PRO_LEAD_TITLE</option>
+        <option value="NAME">PLG_WT_JSHOPPING_B24_PRO_LEAD_NAME</option>
+        <option value="SECOND_NAME">PLG_WT_JSHOPPING_B24_PRO_LEAD_SECOND_NAME</option>
+        <option value="LAST_NAME">PLG_WT_JSHOPPING_B24_PRO_LEAD_LAST_NAME</option>
+        <option value="BIRTHDATE">PLG_WT_JSHOPPING_B24_PRO_LEAD_BIRTHDATE</option>
+        <option value="COMPANY_TITLE">PLG_WT_JSHOPPING_B24_PRO_LEAD_COMPANY_TITLE</option>
+
+        <option value="ADDRESS_COUNTRY">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_COUNTRY</option>
+        <option value="ADDRESS_POSTAL_CODE">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_POSTAL_CODE</option>
+        <option value="ADDRESS_PROVINCE">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_PROVINCE</option>
+        <option value="ADDRESS_REGION">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_REGION</option>
+        <option value="ADDRESS_CITY">PLG_WT_JSHOPPING_B24_PRO_LEAD_CITY</option>
+        <option value="ADDRESS">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRES</option>
+        <option value="OPPORTUNITY">PLG_WT_JSHOPPING_B24_PRO_LEAD_OPPORTUNITY</option>
+        <option value="PHONE">PLG_WT_JSHOPPING_B24_PRO_LEAD_PHONE</option>
+        <option value="EMAIL">PLG_WT_JSHOPPING_B24_PRO_LEAD_EMAIL</option>
+        <option value="FAX">PLG_WT_JSHOPPING_B24_PRO_LEAD_FAX</option>
+        <option value="COMMENTS">PLG_WT_JSHOPPING_B24_PRO_LEAD_COMMENTS</option>
+    </field>
+    <field name="b24fieldcustom"  type="text"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_CUSTOM" showon="b24fieldtype:custom"/>
+    <field name="storefield" type="list" multiple="true" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_FIELD">
+        <option value="order_number">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_NUMBER</option>
+        <option value="user_id">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_USER_ID</option>
+        <option value="order_total">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_TOTAL</option>
+        <option value="order_subtotal">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_SUBTOTAL</option>
+        <option value="shipping_method_id">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_SHIPPING_NAME</option>
+        <option value="order_shipping">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_SHIPPING</option>
+        <option value="order_payment">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_PAYMENT</option>
+        <option value="payment_method_id">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_PAYMENT_NAME</option>
+        <option value="order_package">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_PACKAGE</option>
+        <option value="order_status">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_STATUS</option>
+
+        <option value="coupon_id">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_COUPON_CODE</option>
+        <option value="order_discount">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_DISCOUNT</option>
+        <option value="order_add_info">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_COMMENT</option>
+        <option value="f_name">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_NAME</option>
+        <option value="l_name">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_L_NAME</option>
+        <option value="m_name">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_M_NAME</option>
+        <option value="firma_name">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_COMPANY_NAME</option>
+        <option value="client_type">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_CLIENT_TYPE</option>
+        <option value="firma_code">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_FIRMA_CODE</option>
+        <option value="tax_number">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_TAX_NUMBER</option>
+        <option value="email">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_EMAIL</option>
+        <option value="birthday">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_BIRTHDAY</option>
+
+        <option value="country">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_COUNTRY</option>
+        <option value="zip">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ZIP</option>
+        <option value="state">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_STATE</option>
+        <option value="city">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_CITY</option>
+        <option value="street">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_STREET</option>
+        <option value="street_nr">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_STREET_NR</option>
+        <option value="home">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_HOME</option>
+        <option value="apartment">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_APARTMENT</option>
+        <option value="phone">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_PHONE</option>
+        <option value="mobil_phone">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_MOBILE_PHONE</option>
+        <option value="fax">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_FAX</option>
+        <option value="ext_field_1">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_1</option>
+        <option value="ext_field_2">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_2</option>
+        <option value="ext_field_3">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_3</option>
+    </field>
+</form>

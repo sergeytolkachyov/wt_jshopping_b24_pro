@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<extension type="plugin" version="3.0" method="upgrade" group="system">
+    <name>System - WT JoomShopping Bitrix24 PRO</name>
+    <author>Sergey Tolkachyov</author>
+    <authorEmail>info@web-tolk.ru</authorEmail>
+    <authorUrl>https://web-tolk.ru/</authorUrl>
+	<creationDate>10/01/2020</creationDate>
+    <copyright>Sergey Tolkachyov</copyright>
+    <license>GNU GPL 2.0</license>
+    <version>1.1.1</version>
+    <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
+    <files>
+        <filename plugin="wt_jshopping_b24_pro">wt_jshopping_b24_pro.php</filename>
+        <filename>index.html</filename>
+        <folder>img</folder>
+        <folder>language</folder>
+        <folder>lib</folder>
+        <folder>subform</folder>
+		<folder>js</folder>
+    </files>
+	<languages folder="language" client="administrator">
+
+        <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.ini</language>
+        <language tag="ru-RU">ru-RU/ru-RU.plg_system_wt_jshopping_b24_pro.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.sys.ini</language>
+        <language tag="ru-RU">ru-RU/ru-RU.plg_system_wt_jshopping_b24_pro.sys.ini</language>
+    </languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+			<field type="spacer"
+					   label="PLG_WT_JSHOPPING_B24_PRO_DESC2"/>
+                <field type="text" name="crm_host"
+					label="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST" 
+					default="domain.bitrix24.ru" 
+					description="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST_DESC" />
+
+				<field type="password"
+					name="crm_webhook_secret" 
+					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_SECRET_CODE" 
+					default="" 
+					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_SECRET_CODE_DESC"
+                 />
+                <field type="text" 
+					name="crm_assigned" 
+					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID" 
+					default="1" 
+					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID_DESC" 
+					/>
+			<field type="text" 
+					name="order_name_prefix" 
+					label="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX" 
+					description="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX_DESC" />
+			<field type="radio" 
+				name="lead_vs_deal" 
+				label="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL" 
+				description="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_DESC" 
+				default="lead" class="btn-group btn-group-yesno"
+				disabled="disabled">
+                    <option value="lead">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_L</option>
+                    <option value="deal">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_D</option>
+                </field>
+			<field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_UTM"/>
+            <field type="radio" name="load_jquery_coockie_script" label="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE" description="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE_DESC" default="1" class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio"
+                       name="debug"
+                       label="PLG_WT_JSHOPPING_B24_PRO_DEBUG"
+                       description="PLG_WT_JSHOPPING_B24_PRO_DEBUG_DESC"
+                       default="0" class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_LEAD_SETTINGS">
+                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM_DESC"/>
+                <field name="fields"
+                       label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM"
+                       type="subform"
+                       layout="joomla.form.field.subform.repeatable-table"
+                       formsource="/plugins/system/wt_jshopping_b24_pro/subform/fields.xml"
+                       multiple="true"
+                       buttons="add,remove"
+                />
+
+                <field type="radio"
+                       name="lead_source"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_ID"
+                       default="WEB" class="btn-group btn-group-yesno"
+                >
+                    <option value="WEB">PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_ID_WEB</option>
+                    <option value="STORE">PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_ID_STORE</option>
+                </field>
+                <field name="source_description"  type="textarea"  label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_DESCRIPTION"/>
+            </fieldset>
+            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
+<field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS"/>
+                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT"/>
+                <field type="radio"
+                       name="product_link"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK"
+                       description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK_DESC"
+                       default="1" class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field type="radio"
+                       name="product_image"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_IMG"
+                       description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_IMG_DESC"
+                       default="0" class="btn-group btn-group-yesno"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_IMG_IN_COMMENT</option>
+                </field>
+
+                <field type="radio"
+                       name="ean"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_EAN"
+                       default="0" class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio"
+                       name="manufacturer_code"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_MANUFACTURER_CODE"
+                       description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_MANUFACTURER_CODE_DESC"
+                       default="0" class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio"
+                       name="product_weight"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_WEIGHT"
+                       default="0" class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+    <updateservers>
+        <server type="extension" name="WebTolkUpdateServer"><![CDATA[	https://web-tolk.ru/component/swjprojects/jupdate.html?element=wt_jshopping_b24_pro ]]></server>
+    </updateservers>
+</extension>
