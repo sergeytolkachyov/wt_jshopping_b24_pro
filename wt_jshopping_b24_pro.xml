@@ -6,8 +6,8 @@
     <authorUrl>https://web-tolk.ru/</authorUrl>
 	<creationDate>10/01/2020</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
-    <license>GNU GPL 2.0</license>
-    <version>1.1.1</version>
+    <license>GNU General Public License v3.0</license>
+    <version>1.1.2</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <files>
         <filename plugin="wt_jshopping_b24_pro">wt_jshopping_b24_pro.php</filename>

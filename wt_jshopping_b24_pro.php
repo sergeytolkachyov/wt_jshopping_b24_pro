@@ -5,7 +5,7 @@ defined( '_JEXEC' ) or die;
 
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     1.1.1
+ * @version     1.1.2
  * WT Bitrix24 Connector PRO - advanced tool for reciving order information from JoomShopping into CRM Bitrix24
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
@@ -37,208 +37,208 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
         $webhook_secret = $this->params->get('crm_webhook_secret');
         $crm_assigned_id = $this->params->get('crm_assigned');
 
-        define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
-        include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
-        require_once (JPATH_SITE.'/components/com_jshopping/lib/factory.php');
-        require_once (JPATH_SITE.'/components/com_jshopping/lib/functions.php');
-        $jshopConfig = JSFactory::getConfig();
-        $orderId = $session->get('jshop_end_order_id');
-        $order = JTable::getInstance('order', 'jshop');
-        $order->load($orderId);
-        $order->getAllItems();
+    if(!$crm_host or $crm_host == "" or !$webhook_secret or $webhook_secret == "" or !$crm_assigned_id or $crm_assigned_id == ""){
+	    echo JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_NOT_CONNECTED");
+	}else{
 
-        $qr = array(
-            'fields' => array(),
-            'params' => array("REGISTER_SONET_EVENT" => "Y")
-        );
-        $b24_fields = $this->params->get('fields');
-     for ($i=0; $i<count((array)$b24_fields);$i++){
-        $fields_num = "fields".$i;
-         $b24_field = "";
-         $store_field ="";
-             if($b24_fields->$fields_num->b24fieldtype == "standart"){
-                $b24_field = $b24_fields->$fields_num->b24fieldstandart;
-                      if($b24_field == "TITLE"){
-                            foreach ($b24_fields->$fields_num->storefield as $value){
+	        define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
+	        include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
+	        require_once (JPATH_SITE.'/components/com_jshopping/lib/factory.php');
+	        require_once (JPATH_SITE.'/components/com_jshopping/lib/functions.php');
+	        $jshopConfig = JSFactory::getConfig();
+	        $orderId = $session->get('jshop_end_order_id');
+	        $order = JTable::getInstance('order', 'jshop');
+	        $order->load($orderId);
+	        $order->getAllItems();
 
-                                    $store_field .= $order->$value . " ";
-                            }
-                        $store_field = $this->params->get('order_name_prefix').$store_field;
+	        $qr = array(
+	            'fields' => array(),
+	            'params' => array("REGISTER_SONET_EVENT" => "Y")
+	        );
+	        $b24_fields = $this->params->get('fields');
+	     for ($i=0; $i<count((array)$b24_fields);$i++){
+	        $fields_num = "fields".$i;
+	         $b24_field = "";
+	         $store_field ="";
+	             if($b24_fields->$fields_num->b24fieldtype == "standart"){
+	                $b24_field = $b24_fields->$fields_num->b24fieldstandart;
+	                      if($b24_field == "TITLE"){
+	                            foreach ($b24_fields->$fields_num->storefield as $value){
 
-                    }elseif($b24_field == "EMAIL"){
-                        $store_field = array();
+	                                    $store_field .= $order->$value . " ";
+	                            }
+	                        $store_field = $this->params->get('order_name_prefix').$store_field;
 
-                        $k=0;
-                        foreach($b24_fields->$fields_num->storefield as $value){
-                            $email_name="n".$k;
+	                    }elseif($b24_field == "EMAIL"){
+	                        $store_field = array();
 
-                            $store_field[$email_name] = array(
-                                "VALUE" => $order->$value,
-                                "VALUE_TYPE" => "WORK"
-                            );
-                            $k++;
-                        }//end FOR
+	                        $k=0;
+	                        foreach($b24_fields->$fields_num->storefield as $value){
+	                            $email_name="n".$k;
 
-                    }elseif($b24_field == "PHONE"){
-                        $store_field = array();
+	                            $store_field[$email_name] = array(
+	                                "VALUE" => $order->$value,
+	                                "VALUE_TYPE" => "WORK"
+	                            );
+	                            $k++;
+	                        }//end FOR
 
-                        $k=0;
-                        foreach($b24_fields->$fields_num->storefield as $value){
-                            $phone_name="n".$k;
+	                    }elseif($b24_field == "PHONE"){
+	                        $store_field = array();
 
-                            $store_field[$phone_name] = array(
-                                        "VALUE" => $order->$value,
-                                        "VALUE_TYPE" => "WORK"
-                                    );
-                            $k++;
-                        }//end FOR
+	                        $k=0;
+	                        foreach($b24_fields->$fields_num->storefield as $value){
+	                            $phone_name="n".$k;
 
-                    }else {
-                        // TODO: Сделать функцию, а не копировать 2 раза цикл
-                        foreach ($b24_fields->$fields_num->storefield as $value){
-                            if($value == "country"){//Получаем название страны
-                                $store_field .= $this->getCountryName($order->$value,$store_name)." ";
-                            }elseif ($value == "coupon_id"){// Получаем код купона
-                                $store_field .= $this->getCountryCouponCode($order->$value,$store_name)." ";
-                            }elseif($value == "shipping_method_id"){//название способа доставки
-                                $store_field .= $this->getShippingMethodName($order->$value,$store_name)." ";
-                            }elseif($value == "payment_method_id"){//название способа оплаты
-                                $store_field .= $this->getPaymentMethodName($order->$value,$store_name)." ";
-                            }elseif($value == "order_status"){//название статуса заказа
-                                $store_field .= $this->getOrderStatusName($order->$value,$store_name)." ";
-                            }elseif($value == "birthday" AND ($order->$value == "0000-00-00" || $order->$value == "")){
-                                continue;
-                            }else {
-                                $store_field .= $order->$value . " ";
-                            }
-                        }
-                    }
+	                            $store_field[$phone_name] = array(
+	                                        "VALUE" => $order->$value,
+	                                        "VALUE_TYPE" => "WORK"
+	                                    );
+	                            $k++;
+	                        }//end FOR
 
-             }elseif ($b24_fields->$fields_num->b24fieldtype == "custom"){// Пользовательское поле Битрикс24
-                 $b24_field = $b24_fields->$fields_num->b24fieldcustom;
+	                    }else {
+	                        // TODO: Сделать функцию, а не копировать 2 раза цикл
+	                        foreach ($b24_fields->$fields_num->storefield as $value){
+	                            if($value == "country"){//Получаем название страны
+	                                $store_field .= $this->getCountryName($order->$value)." ";
+	                            }elseif ($value == "coupon_id"){// Получаем код купона
+	                                $store_field .= $this->getCountryCouponCode($order->$value)." ";
+	                            }elseif($value == "shipping_method_id"){//название способа доставки
+	                                $store_field .= $this->getShippingMethodName($order->$value)." ";
+	                            }elseif($value == "payment_method_id"){//название способа оплаты
+	                                $store_field .= $this->getPaymentMethodName($order->$value)." ";
+	                            }elseif($value == "order_status"){//название статуса заказа
+	                                $store_field .= $this->getOrderStatusName($order->$value)." ";
+	                            }elseif($value == "birthday" AND ($order->$value == "0000-00-00" || $order->$value == "")){
+	                                continue;
+	                            }else {
+	                                $store_field .= $order->$value . " ";
+	                            }
+	                        }
+	                    }
 
-                     foreach ($b24_fields->$fields_num->storefield as $value){
-                         if($value == "country"){//Получаем название страны
-                             $store_field .= $this->getCountryName($order->$value,$store_name)." ";
-                         }elseif ($value == "coupon_id"){// Получаем код купона
-                             $store_field .= $this->getCountryCouponCode($order->$value,$store_name)." ";
-                         }elseif($value == "shipping_method_id"){//название способа доставки
-                             $store_field .= $this->getShippingMethodName($order->$value,$store_name)." ";
-                         }elseif($value == "payment_method_id"){//название способа оплаты
-                             $store_field .= $this->getPaymentMethodName($order->$value,$store_name)." ";
-                         }elseif($value == "order_status"){//название статуса заказа
-                             $store_field .= $this->getOrderStatusName($order->$value,$store_name)." ";
-                         }else {
-                             $store_field .= $order->$value . " ";
-                         }
-                     }
-             }
+	             }elseif ($b24_fields->$fields_num->b24fieldtype == "custom"){// Пользовательское поле Битрикс24
+	                 $b24_field = $b24_fields->$fields_num->b24fieldcustom;
 
-         $qr["fields"][$b24_field] = $store_field;
+	                     foreach ($b24_fields->$fields_num->storefield as $value){
+	                         if($value == "country"){//Получаем название страны
+	                             $store_field .= $this->getCountryName($order->$value)." ";
+	                         }elseif ($value == "coupon_id"){// Получаем код купона
+	                             $store_field .= $this->getCountryCouponCode($order->$value)." ";
+	                         }elseif($value == "shipping_method_id"){//название способа доставки
+	                             $store_field .= $this->getShippingMethodName($order->$value)." ";
+	                         }elseif($value == "payment_method_id"){//название способа оплаты
+	                             $store_field .= $this->getPaymentMethodName($order->$value)." ";
+	                         }elseif($value == "order_status"){//название статуса заказа
+	                             $store_field .= $this->getOrderStatusName($order->$value)." ";
+	                         }else {
+	                             $store_field .= $order->$value . " ";
+	                         }
+	                     }
+	             }
 
-         }//END FOR
+	         $qr["fields"][$b24_field] = $store_field;
 
-
-        $qr["fields"]["SOURCE_ID"] = $this->params->get('lead_source');
-        $qr["fields"]["SOURCE_DESCRIPTION"] = $this->params->get('source_description');
-
-
+	         }//END FOR
 
 
-
-
-        $product_rows = array();
-        $b24_comment="<br/>";
-       $a=0;
-       foreach($order->items as $items){
-           $product_rows[$a]["PRODUCT_NAME"] = $items->product_name;
-           $product_rows[$a]["PRICE"] = $items->product_item_price;
-           $product_rows[$a]["QUANTITY"] = $items->product_quantity;
-
-
-           if($this->params->get('product_image') == 1) {
-               $b24_comment .= "<img src='" . $jshopConfig->image_product_live_path . "/" . $items->thumb_image . "' width='150px'/><br/>";
-           }
-           if($this->params->get('product_link') == 1) {
-               $b24_comment .= "<a href='" . SEFLink('index.php?option=com_jshopping&controller=product&task=view&category_id=' . $items->category_id . '&product_id=' . $items->product_id) . "'/>" . $items->product_name . "</a><br/>";
-           }else {
-               $b24_comment .= $items->product_name."<br/>";
-           }
-           if($this->params->get('ean') == 1) {
-               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_EAN").": ".$items->ean."<br/>";
-           }
-           if($this->params->get('manufacturer_code') == 1) {
-               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_MANUFACTURER_CODE").": ".$items->manufacturer_code."<br/>";
-           }
-           if($this->params->get('product_weight') == 1) {
-               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_WEIGHT").": ".$items->weight."<br/>";
-           }
-           $b24_comment .= $items->product_attributes . "<br/>";
-           $b24_comment .= $items->product_freeattributes . "<br/><hr/>";
-           $a++;
-       }
-
-
-        $b24_comment .= "<a href='".JURI::root()."administrator/index.php?option=com_jshopping&controller=orders&task=show&order_id=".$order->order_id."'>See this order in JoomShopping</a>";
-        $qr["fields"]["COMMENTS"] .= $b24_comment;
-
-		$getCookie = JFactory::getApplication()->input->cookie;
-        $utms = array(
-            'utm_source',
-            'utm_medium',
-            'utm_campaign',
-            'utm_content',
-            'utm_term'
-        );
-        foreach ($utms as $key){
-            if($key != "utm_term"){
-                $utm = $getCookie->get($name = $key);
-            } else {
-                $utm = $getCookie->get($name = $key);
-                $utm = urldecode($utm);
-            }
-            $utm_name = strtoupper($key);
-            $qr["fields"][$utm_name] .=  $utm;
-        }
-		
-        $arData = [
-            'add_lead' => [
-                'method' => 'crm.lead.add',
-                'params' => $qr
-            ],
-            'add_products' => [
-                'method' => 'crm.lead.productrows.set',
-                'params' => [
-                    'id' => '$result[add_lead]',
-                    'rows' => $product_rows
-                ]
-            ]
-        ];
-       $resultBitrix24 = CRest::callBatch($arData);
-
-        /************* DEBUG *****************/
-        $debug = $this->params->get('debug');
-        if($debug == 1){
-            echo"<pre><h3>Query array (to Bitrix24)</h3><br/>";
-            print_r($qr);
-            echo "</pre>";
-
-            echo"<pre><h3>Product rows array (to Bitrix24)</h3><br/>";
-            print_r($product_rows);
-            echo"</pre>";
-            echo"<pre><h3>Bitrix24 response array</h3><br/>";
-             print_r($resultBitrix24);
-            echo "</pre>";
-            echo"<pre><h3>JoomShopping order array</h3><br/>";
-            print_r($order);
-            echo "</pre>";
-
-        }// if debug
+	        $qr["fields"]["SOURCE_ID"] = $this->params->get('lead_source');
+	        $qr["fields"]["SOURCE_DESCRIPTION"] = $this->params->get('source_description');
 
 
 
 
 
+
+	        $product_rows = array();
+	        $b24_comment="<br/>";
+	       $a=0;
+	       foreach($order->items as $items){
+	           $product_rows[$a]["PRODUCT_NAME"] = $items->product_name;
+	           $product_rows[$a]["PRICE"] = $items->product_item_price;
+	           $product_rows[$a]["QUANTITY"] = $items->product_quantity;
+
+
+	           if($this->params->get('product_image') == 1) {
+	               $b24_comment .= "<img src='" . $jshopConfig->image_product_live_path . "/" . $items->thumb_image . "' width='150px'/><br/>";
+	           }
+	           if($this->params->get('product_link') == 1) {
+	               $b24_comment .= "<a href='" . SEFLink('index.php?option=com_jshopping&controller=product&task=view&category_id=' . $items->category_id . '&product_id=' . $items->product_id) . "'/>" . $items->product_name . "</a><br/>";
+	           }else {
+	               $b24_comment .= $items->product_name."<br/>";
+	           }
+	           if($this->params->get('ean') == 1) {
+	               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_EAN").": ".$items->ean."<br/>";
+	           }
+	           if($this->params->get('manufacturer_code') == 1) {
+	               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_MANUFACTURER_CODE").": ".$items->manufacturer_code."<br/>";
+	           }
+	           if($this->params->get('product_weight') == 1) {
+	               $b24_comment .= JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_WEIGHT").": ".$items->weight."<br/>";
+	           }
+	           $b24_comment .= $items->product_attributes . "<br/>";
+	           $b24_comment .= $items->product_freeattributes . "<br/><hr/>";
+	           $a++;
+	       }
+
+
+	        $b24_comment .= "<a href='".JURI::root()."administrator/index.php?option=com_jshopping&controller=orders&task=show&order_id=".$order->order_id."'>See this order in JoomShopping</a>";
+	        $qr["fields"]["COMMENTS"] .= $b24_comment;
+
+			$getCookie = JFactory::getApplication()->input->cookie;
+	        $utms = array(
+	            'utm_source',
+	            'utm_medium',
+	            'utm_campaign',
+	            'utm_content',
+	            'utm_term'
+	        );
+	        foreach ($utms as $key){
+	            if($key != "utm_term"){
+	                $utm = $getCookie->get($name = $key);
+	            } else {
+	                $utm = $getCookie->get($name = $key);
+	                $utm = urldecode($utm);
+	            }
+	            $utm_name = strtoupper($key);
+	            $qr["fields"][$utm_name] .=  $utm;
+	        }
+
+	        $arData = [
+	            'add_lead' => [
+	                'method' => 'crm.lead.add',
+	                'params' => $qr
+	            ],
+	            'add_products' => [
+	                'method' => 'crm.lead.productrows.set',
+	                'params' => [
+	                    'id' => '$result[add_lead]',
+	                    'rows' => $product_rows
+	                ]
+	            ]
+	        ];
+	       $resultBitrix24 = CRest::callBatch($arData);
+
+	        /************* DEBUG *****************/
+	        $debug = $this->params->get('debug');
+	        if($debug == 1){
+	            echo"<pre><h3>Query array (to Bitrix24)</h3><br/>";
+	            print_r($qr);
+	            echo "</pre>";
+
+	            echo"<pre><h3>Product rows array (to Bitrix24)</h3><br/>";
+	            print_r($product_rows);
+	            echo"</pre>";
+	            echo"<pre><h3>Bitrix24 response array</h3><br/>";
+	             print_r($resultBitrix24);
+	            echo "</pre>";
+	            echo"<pre><h3>JoomShopping order array</h3><br/>";
+	            print_r($order);
+	            echo "</pre>";
+
+	        }// if debug
+        }//If b24 configured
     }// END onBeforeDisplayCheckoutFinish
 
 
