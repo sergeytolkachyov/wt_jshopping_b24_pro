@@ -7,7 +7,7 @@
 	<creationDate>10/01/2020</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>1.1.2</version>
+    <version>2.0.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <files>
         <filename plugin="wt_jshopping_b24_pro">wt_jshopping_b24_pro.php</filename>
@@ -29,7 +29,7 @@
         <fields name="params">
             <fieldset name="basic">
 			<field type="spacer"
-					   label="PLG_WT_JSHOPPING_B24_PRO_DESC2"/>
+                   label="PLG_WT_JSHOPPING_B24_PRO_DESC2"/>
                 <field type="text" name="crm_host"
 					label="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST" 
 					default="domain.bitrix24.ru" 
@@ -51,15 +51,39 @@
 					name="order_name_prefix" 
 					label="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX" 
 					description="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX_DESC" />
-			<field type="radio" 
-				name="lead_vs_deal" 
+
+            <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PLUGIN_BEHAVIOR"/>
+            <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_AND_DEAL_INFO"/>
+
+			<field type="radio"
+				name="lead_vs_deal"
 				label="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL" 
 				description="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_DESC" 
-				default="lead" class="btn-group btn-group-yesno"
-				disabled="disabled">
+				default="lead" class="btn-group btn-group-yesno">
                     <option value="lead">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_L</option>
                     <option value="deal">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_D</option>
                 </field>
+                <field type="radio"
+                       name="create_contact_for_unknown_lead"
+                       label="PLG_WT_JSHOPPING_B24_PRO_CREATE_CONTACT_FOR_UNKNOWN_LEAD"
+                       description="PLG_WT_JSHOPPING_B24_PRO_CREATE_CONTACT_FOR_UNKNOWN_LEAD_DESC"
+                       default="0" class="btn-group btn-group-yesno"
+                       showon="lead_vs_deal:lead">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
+                <field type="list"
+                       label="PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE"
+                       name="deal_type"
+                       showon="lead_vs_deal:deal">
+                    <option value="SALE">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_SALE</option>
+                    <option value="COMPLEX">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_COMPLEX</option>
+                    <option value="GOODS">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_GOODS</option>
+                    <option value="SERVICES">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_SERVICES</option>
+                    <option value="SERVICE">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_SERVICE</option>
+                </field>
+
 			<field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_UTM"/>
             <field type="radio" name="load_jquery_coockie_script" label="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE" description="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE_DESC" default="1" class="btn-group btn-group-yesno">
                     <option value="1">JYES</option>

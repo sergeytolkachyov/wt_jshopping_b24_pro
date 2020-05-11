@@ -17,8 +17,9 @@
         <option value="ADDRESS_POSTAL_CODE">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_POSTAL_CODE</option>
         <option value="ADDRESS_PROVINCE">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_PROVINCE</option>
         <option value="ADDRESS_REGION">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_REGION</option>
-        <option value="ADDRESS_CITY">PLG_WT_JSHOPPING_B24_PRO_LEAD_CITY</option>
-        <option value="ADDRESS">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRES</option>
+        <option value="ADDRESS_CITY">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_CITY</option>
+        <option value="ADDRESS">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS</option>
+        <option value="ADDRESS_2">PLG_WT_JSHOPPING_B24_PRO_LEAD_ADDRESS_2</option>
         <option value="OPPORTUNITY">PLG_WT_JSHOPPING_B24_PRO_LEAD_OPPORTUNITY</option>
         <option value="PHONE">PLG_WT_JSHOPPING_B24_PRO_LEAD_PHONE</option>
         <option value="EMAIL">PLG_WT_JSHOPPING_B24_PRO_LEAD_EMAIL</option>
