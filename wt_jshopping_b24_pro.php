@@ -5,7 +5,7 @@ defined( '_JEXEC' ) or die;
 
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.0.0
+ * @version     2.0.1
  * WT Bitrix24 Connector PRO - advanced tool for reciving order information from JoomShopping into CRM Bitrix24
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
@@ -561,13 +561,20 @@ private function addContact($contact, $debug){
 
 private function addRequisites($contact_id,$requisites,$debug){
 
+	$url = $this->params->get('crm_host');
+	$check_domain_zone_ru = preg_match("/(.ru)/", $url);
+	if($check_domain_zone_ru == 1){
+		$preset_id = 5;//Россия: Организация - 1, Индивидуальный предприниматель - 3, Физическое лицо - 5.
+	}else{
+		$preset_id = 3;//Остальные страны: Организация - 1, Физическое лицо  - 3,
+	}
 	$resultRequisite = CRest::call(
 		'crm.requisite.add',
 		[
 			'fields' => [
 				'ENTITY_TYPE_ID' => 3,//3 - контакт, 4 - компания
 				'ENTITY_ID' => $contact_id,//contact id
-				'PRESET_ID' => 5,//Организация - 1, Индивидуальный предприниматель - 3, Физическое лицо - 5
+				'PRESET_ID' => $preset_id,//Россия: Организация - 1, Индивидуальный предприниматель - 3, Физическое лицо - 5. Украина: Организация - 1, Физическое лицо  - 3,
 				'NAME' => 'Person',
 				'ACTIVE' => 'Y'
 			]
