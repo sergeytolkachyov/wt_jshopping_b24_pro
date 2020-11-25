@@ -2,11 +2,9 @@
 // No direct access
 defined( '_JEXEC' ) or die;
 
-
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.0.1
- * WT Bitrix24 Connector PRO - advanced tool for reciving order information from JoomShopping into CRM Bitrix24
+ * @version     2.1.0
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -271,6 +269,20 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 	            $utm_name = strtoupper($key);
 	            $qr["fields"][$utm_name] .=  $utm;
 	        }
+
+
+	        /*
+	         * Добавление лида или сделки на определенную стадию (с определенным статусом)
+	         */
+
+		    if($this->params->get("create_lead_or_deal_on_specified_stage") == 1){
+				if($plugin_mode == "lead" && !empty($this->params->get("lead_status"))){
+					$qr["fields"]["STATUS_ID"] = $this->params->get("lead_status");
+				}elseif($plugin_mode == "deal" && !empty($this->params->get("deal_stage"))){
+				     $qr["fields"]["STAGE_ID"] = $this->params->get("deal_stage");
+			    }
+		    }
+
 
 
 	        if ($plugin_mode == "deal" || ($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1)){
