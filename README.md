@@ -1,4 +1,4 @@
-[![Status](https://img.shields.io/badge/Status-stable-green.svg)]
+[![Status](https://img.shields.io/badge/Status-stable-green.svg)]() [![JoomlaVersion](https://img.shields.io/badge/Joomla-3.9-orange.svg)]()
 
 
 # wt_jshopping_b24_pro
