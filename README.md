@@ -1,4 +1,4 @@
-[![Status](https://img.shields.io/badge/Status-stable-green.svg)]() [![JoomlaVersion](https://img.shields.io/badge/Joomla-3.9-orange.svg)]() [![DocumentationRus](https://img.shields.io/badge/Documentation-rus-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html) [![DocumentationEng](https://img.shields.io/badge/Documentation-eng-blueviolet.svg)](https://web-tolk.ru/en/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html)
+[![Status](https://img.shields.io/badge/Status-stable-green.svg)]() [![JoomlaVersion](https://img.shields.io/badge/Joomla-3.9-orange.svg)]() [![JoomShoppingVersion](https://img.shields.io/badge/JoomShopping-3.8.x-important.svg)]() [![DocumentationRus](https://img.shields.io/badge/Documentation-rus-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html) [![DocumentationEng](https://img.shields.io/badge/Documentation-eng-blueviolet.svg)](https://web-tolk.ru/en/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html)
 
 # wt_jshopping_b24_pro
 Joomla 3 JoomShopping system plugin WT JoomShopping Bitrix24 PRO. The plugin allows you to send JoomShopping order data to Bitrix24 CRM.
