@@ -1,4 +1,4 @@
-[![Generic badge](https://img.shields.io/badge/<Status>-<stable>-<COLOR>.svg)](https://shields.io/)
+[![Generic badge](https://img.shields.io/badge/Status-stable-green.svg)]
 # wt_jshopping_b24_pro
 Joomla 3 JoomShopping system plugin WT JoomShopping Bitrix24 PRO. The plugin allows you to send JoomShopping order data to Bitrix24 CRM.
 PRO-version of the plugin for sending orders from the JoomShopping online store in Bitrix24 CRM.
