@@ -5,10 +5,10 @@ Joomla 3 JoomShopping system plugin WT JoomShopping Bitrix24 PRO. The plugin all
 PRO-version of the plugin for sending orders from the JoomShopping online store in Bitrix24 CRM.
 
 # v.2.0.0 Video demo
-[!(https://img.youtube.com/vi/WwhFJbb1kBM/0.jpg)](https://www.youtube.com/watch?v=WwhFJbb1kBM)
+[![](https://img.youtube.com/vi/WwhFJbb1kBM/0.jpg)](https://www.youtube.com/watch?v=WwhFJbb1kBM)
 
 # v.2.1.0 Video demo
-[!(https://img.youtube.com/vi/pekbg9HX8_c/0.jpg)](https://www.youtube.com/watch?v=pekbg9HX8_c)
+[![](https://img.youtube.com/vi/pekbg9HX8_c/0.jpg)](https://www.youtube.com/watch?v=pekbg9HX8_c)
 
 
 
