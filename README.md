@@ -1,4 +1,4 @@
-[![Status](https://img.shields.io/badge/Status-stable-green.svg)](https://pypi.python.org/pypi/ansicolortags/)
+[![Status](https://img.shields.io/badge/Status-stable-green.svg)]
 
 
 # wt_jshopping_b24_pro
