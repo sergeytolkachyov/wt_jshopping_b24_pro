@@ -14,10 +14,10 @@ use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 FormHelper::loadFieldClass('list');
-class JFormFieldB24ldealstage extends JFormFieldList
+class JFormFieldB24ldealcategory extends JFormFieldList
 {
 
-	protected $type = 'b24ldealstage';
+	protected $type = 'b24ldealcategory';
 
 	protected function getOptions()
 	{
@@ -26,40 +26,53 @@ class JFormFieldB24ldealstage extends JFormFieldList
 		$crm_host = (!empty($params->crm_host) ? $params->crm_host : '');
 		$webhook_secret = (!empty($params->crm_webhook_secret) ? $params->crm_webhook_secret : '');
 		$crm_assigned_id = (!empty($params->crm_assigned) ? $params->crm_assigned : '');
-		$deal_category = (!empty($params->deal_category) ? $params->deal_category : '');
-
-
 		if(!empty($crm_host)&&!empty($webhook_secret)&&!empty($crm_assigned_id))
 		{
 			include_once(JPATH_SITE . "/plugins/system/wt_jshopping_b24_pro/lib/crest.php");
 
+			$params         = [
+				'filter' => [
+					'IS_LOCKED' => 'N'
+				],
+				'order'  => [
+					'SORT' => 'ASC'
+				],
+				'select'  => [
+					"ID", "NAME"
+				],
+			];
 
-
-
-			if(!empty($deal_category)){
-				$resultBitrix24 = CRest::call("crm.dealcategory.stage.list", ["id"=> $deal_category]);
-			}else{
-				$b24_params = [
-					'filter' => [
-						'ENTITY_ID' => 'DEAL_STAGE'
+			$get_deal_categories_params = [
+				'get_default_deal_category' => [
+					'method' => 'crm.dealcategory.default.get',
+					'params' => [
+						'filter' => [
+							'IS_LOCKED' => 'N'
+						],
+						'order'  => [
+							'SORT' => 'ASC'
+						],
+						'select'  => [
+							"ID", "NAME"
+						],
 					],
-					'order'  => [
-						'SORT' => 'ASC'
-					]
-				];
-				$resultBitrix24 = CRest::call("crm.status.list", $b24_params);
-			}
+				],
+				'get_deal_category' => [
+					'method' => 'crm.dealcategory.list'
+				]
+			];
+			$get_deal_categories = CRest::callBatch($get_deal_categories_params);
 
 
-
-
+			$deal_categories = array($get_deal_categories["result"]["result"]["get_default_deal_category"]);
+			$deal_categories = array_merge($deal_categories, $get_deal_categories["result"]["result"]["get_deal_category"]);
 
 			$options = array();
-			if ($resultBitrix24["result"])
+			if (!empty($deal_categories))
 			{
-				foreach ($resultBitrix24["result"] as $lead_status)
+				foreach ($deal_categories as $deal_category)
 				{
-					$options[] = HTMLHelper::_('select.option', $lead_status["STATUS_ID"], $lead_status["NAME"]);
+					$options[] = HTMLHelper::_('select.option', $deal_category["ID"], $deal_category["NAME"]);
 				}
 			}
 
