@@ -4,7 +4,7 @@ defined( '_JEXEC' ) or die;
 
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.2.0
+ * @version     2.3.0
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -26,11 +26,9 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
     }
 
 
-
-    public function onBeforeDisplayCheckoutFinish()
+    public function onAfterCreateOrderFull($order,$cart)
     {
 
-        $session = JFactory::getSession();
         $crm_host = $this->params->get('crm_host');
         $webhook_secret = $this->params->get('crm_webhook_secret');
         $crm_assigned_id = $this->params->get('crm_assigned');
@@ -44,7 +42,7 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
         require_once (JPATH_SITE.'/components/com_jshopping/lib/factory.php');
         require_once (JPATH_SITE.'/components/com_jshopping/lib/functions.php');
         $jshopConfig = JSFactory::getConfig();
-        $orderId = $session->get('jshop_end_order_id');
+        $orderId = $order->order_id;
         $order = JTable::getInstance('order', 'jshop');
         $order->load($orderId);
         $order->getAllItems();
