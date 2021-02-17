@@ -1,18 +1,40 @@
 <?php
-// No direct access
-defined( '_JEXEC' ) or die;
-
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.3.0
+ * @version     2.4.0
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
  * @since       1.0
  */
-jimport('joomla.plugin.plugin');
-class plgSystemWt_jshopping_b24_pro extends JPlugin
+// No direct access
+defined( '_JEXEC' ) or die;
+use Joomla\CMS\Application\CMSApplication;
+use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Factory;
+
+
+class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 {
+	/* Header for debug element
+	 * @var String
+	 * @since 2.4.0
+	 */
+	private $debug_section_header;
+
+	/* Debug data
+	 * @var String
+	 * @since 2.4.0
+	 */
+	private $debug_data;
+
+	/* Debug output
+	 * @var String
+	 * @since 2.4.0
+	 */
+	private $debug_output;
+
 	/**
 	 * Class Constructor
 	 * @param object $subject
@@ -28,12 +50,12 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 
     public function onAfterCreateOrderFull($order,$cart)
     {
-
+	    $session = Factory::getSession();
         $crm_host = $this->params->get('crm_host');
         $webhook_secret = $this->params->get('crm_webhook_secret');
         $crm_assigned_id = $this->params->get('crm_assigned');
 
-    if(!$crm_host or $crm_host == "" or !$webhook_secret or $webhook_secret == "" or !$crm_assigned_id or $crm_assigned_id == ""){
+    if(empty($crm_host) or empty($webhook_secret) or empty($crm_assigned_id)){
 	    echo JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_NOT_CONNECTED");
 	}else{
 
@@ -63,9 +85,9 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 	    }
 
 	    $debug = $this->params->get('debug');
+
 	    if($debug == 1){
-		    echo "<h3>Debug information</h3>";
-		    echo "Plugin mode: <strong style='display: inline-block;padding: .25em .4em;font-size: 75%;font-weight: 700;line-height: 1;text-align: center;white-space: nowrap;vertical-align: baseline;border-radius: .25rem;transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; color: #fff;background-color: #343a40;'>".$plugin_mode."</strong>";
+			$this->prepareDebugInfo("Plugin mode",$plugin_mode);
 	    }
 
 	        $b24_fields = $this->params->get('fields');
@@ -227,7 +249,7 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 	               $b24_comment .= "<img src='" . $jshopConfig->image_product_live_path . "/" . $items->thumb_image . "' width='150px'/><br/>";
 	           }
 	           if($this->params->get('product_link') == 1) {
-	               $b24_comment .= "<a href='".substr(JURI::root(),0,-1). SEFLink('index.php?option=com_jshopping&controller=product&task=view&category_id=' . $items->category_id . '&product_id=' . $items->product_id) . "'/>" . $items->product_name . "</a><br/>";
+	               $b24_comment .= "<a href='".substr(JURI::root(),0,-1). Route::_('index.php?option=com_jshopping&controller=product&task=view&category_id=' . $items->category_id . '&product_id=' . $items->product_id) . "'/>" . $items->product_name . "</a><br/>";
 	           }else {
 	               $b24_comment .= $items->product_name."<br/>";
 	           }
@@ -318,21 +340,8 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 
 		        if($debug == 1)
 		        {
-			        echo "<details style='border:1px solid #3a86ff;'>";
-			        echo "<summary style='background-color:#3a86ff; color:#fff;'>FIND_DOUBLES -> array TO BITRIX 24 with information for search duplicate contacts</summary>";
-			        echo "<pre style='background-color: #eee; padding:10px;'>";
-			        print_r($find_doubles);
-			        echo "</pre>";
-			        echo "</details>";
-
-
-			        echo "<details style='border:1px solid #3a86ff;'>";
-			        echo "<summary ".($find_doublesBitrix24["result"]["result_error"] ? "style='background-color:#dc3545; color:#fff;'" : "style='background-color:#3a86ff; color:#fff;'" ).">FIND_DOUBLES <- response array FROM BITRIX 24 with information about search results for duplicate contacts</summary>";
-			        echo "<pre style='background-color: #eee; padding:10px;'>";
-			        print_r($find_doublesBitrix24);
-			        echo "</pre>";
-			        echo "</details>";
-
+			        $this->prepareDebugInfo("FIND_DOUBLES -> array TO BITRIX 24 with information for search duplicate contacts",$find_doubles);
+			        $this->prepareDebugInfo("FIND_DOUBLES <- response array FROM BITRIX 24 with information about search results for duplicate contacts",$find_doublesBitrix24);
 		        }
 
 
@@ -492,30 +501,11 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 
 
 			if($debug == 1){
-				echo "<details style='border:1px solid #757575;'>";
-		        echo "<summary style='background-color:#757575; color:#fff;'>QR - order info array prepared to send to Bitrix24</summary>";
-				echo "<pre style='background-color: #eee; padding:10px;'>";
-		        print_r($qr);
-		        echo "</pre>";
-		        echo "</details>";
-				echo "<details style='border:1px solid #757575;'>";
-		        echo "<summary style='background-color:#757575; color:#fff;'>Product_rows - products rows array for include to lead or deal, prepared to send to Bitrix24</summary>";
-				echo "<pre style='background-color: #eee; padding:10px;'>";
-		        print_r($product_rows);
-		        echo "</pre>";
-		        echo "</details>";
-				echo "<details style='border:1px solid #8338ec;'>";
-		        echo "<summary style='background-color:#8338ec; color:#fff;'>Contact - contact array to send to functions (name, phone, email etc.)</summary>";
-				echo "<pre style='background-color: #eee; padding:10px;'>";
-		        print_r($contact);
-		        echo "</pre>";
-		        echo "</details>";
-				echo "<details style='border:1px solid #ffbe0b;'>";
-		        echo "<summary style='background-color:#ffbe0b; color:#000;'>Requisites - Requisites array to send to functions (address, city, country etc.) </summary>";
-				echo "<pre style='background-color: #eee; padding:10px;'>";
-		        print_r($requisites);
-		        echo "</pre>";
-		        echo "</details>";
+
+				$this->prepareDebugInfo("QR - order info array prepared to send to Bitrix24",$qr);
+				$this->prepareDebugInfo("Product_rows - products rows array for include to lead or deal, prepared to send to Bitrix24",$product_rows);
+				$this->prepareDebugInfo("Contact - contact array to send to functions (name, phone, email etc.)",$contact);
+				$this->prepareDebugInfo("Requisites - Requisites array to send to functions (address, city, country etc.)",$requisites);
 			}
 
 
@@ -535,6 +525,8 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 		        $this->addLead($qr, $product_rows, $debug);
 	        }
 
+
+
         }//If b24 configured
     }// END onBeforeDisplayCheckoutFinish
 
@@ -548,15 +540,12 @@ class plgSystemWt_jshopping_b24_pro extends JPlugin
 
 private function addContact($contact, $debug){
 	$resultBitrix24 = CRest::call("crm.contact.add",$contact);
+
 	if($debug == 1)
 	{
-		echo "<details style='border:1px solid #8338ec;'>";
-		echo "<summary ".($resultBitrix24["result"]["result_error"] ? "style='background-color:#dc3545; color:#fff;'" : "style='background-color:#8338ec; color:#fff;'" ).">function addContact - Bitrix 24 response array</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		print_r($resultBitrix24);
-		echo "</pre>";
-		echo "</details>";
+		$this->prepareDebugInfo("function addContact - Bitrix 24 response array",$resultBitrix24);
 	}
+
 	if($resultBitrix24["result"]["result_error"]){
 		return false;
 	} else {
@@ -616,34 +605,9 @@ private function addRequisites($contact_id,$requisites,$debug){
 
 	if($debug == 1)
 	{
-		echo "<details style='border:1px solid #ffbe0b;'>";
-		echo "<summary style='background-color:#ffbe0b; color:#000;'>function addRequisites -> Requisites array</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		echo "Contact ID: ".$contact_id."<br/>";
-		echo "Requisites array: <br/>";
-		print_r($requisites);
-		echo "</pre>";
-		echo "</details>";
-
-		echo "<details style='border:1px solid #ffbe0b;'>";
-		echo "<summary ".($resultRequisite["result"]["result_error"] ? "style='background-color:#ffbe0b; color:#000;'" : "style='background-color:#ffbe0b; color:#000;'" ).">function addRequisites - <strong>addRequisites section</strong> - <- respone array from Bitrix 24</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		echo "<strong>ENTITY_TYPE_ID:</strong> 3 (3 - Contact, 4 - Company)<br/>";
-		echo "<strong>ENTITY_ID:</strong> ".$contact_id." (created Contact or Company id)<br/>";
-		echo "<strong>PRESET_ID:</strong> 5 (Person)<br/>";
-		print_r($resultRequisite);
-		echo "</pre>";
-		echo "</details>";
-		echo "<details style='border:1px solid #ffbe0b;'>";
-		echo "<summary ".($resultAddress["result"]["result_error"] ? "style='background-color:#ffbe0b; color:#000;'" : "style='background-color:#ffbe0b; color:#000;'" ).">function addRequisites - <strong>addAddress (to requisite) section </strong>-  <- respone array from Bitrix 24</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		echo "<strong>TYPE_ID:</strong> 1 (1 - Actual address, 4 - Company)<br/>";
-		echo "<strong>ENTITY_TYPE_ID:</strong> 8 (8 - Requisite)<br/>";
-		echo "<strong>ENTITY_ID:</strong> ".$resultRequisite["result"]." (created Requisite id)<br/>";
-		print_r($resultAddress);
-		echo "</pre>";
-		echo "</details>";
-
+		$this->prepareDebugInfo("function addRequisites -> Requisites array",$requisites);
+		$this->prepareDebugInfo("function addRequisites - addRequisites section - <- respone array from Bitrix 24",$resultRequisite);
+		$this->prepareDebugInfo("function addRequisites - addAddress (to requisite) section -  <- respone array from Bitrix 24",$resultAddress);
 	}
 	if($resultRequisite["result"]["result_error"]){
 		return false;
@@ -670,22 +634,8 @@ private function updateContact($contact_id, $upd_info, $debug){
 
 	if($debug == 1)
 	{
-		echo "<details style='border:1px solid #8338ec;'>";
-		echo "<summary style='background-color:#8338ec; color:#fff;'>function updateContact -> prepared info to send to Bitrix 24</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		echo "Contact ID: ".$contact_id."<br/>";
-		echo "fields: <br/>";
-		print_r($upd_info);
-		echo "</pre>";
-		echo "</details>";
-
-		echo "<details style='border:1px solid #8338ec;'>";
-		echo "<summary ".($req_crm_contact_fields["result"]["result_error"] ? "style='background-color:#dc3545; color:#fff;'" : "style='background-color:#8338ec; color:#fff;'" ).">function updateContact <- respone array from Bitrix 24</summary>";
-		echo "<pre style='background-color: #eee; padding:10px;'>";
-		print_r($req_crm_contact_fields);
-		echo "</pre>";
-		echo "</details>";
-
+		$this->prepareDebugInfo("function updateContact -> prepared info to send to Bitrix 24",$upd_info);
+		$this->prepareDebugInfo("function updateContact <- respone array from Bitrix 24",$req_crm_contact_fields);
 	}
 
 	if($req_crm_contact_fields["result"]["result_error"])
@@ -724,18 +674,9 @@ private function updateContact($contact_id, $upd_info, $debug){
 		$resultBitrix24 = CRest::callBatch($arData);
 		if($debug == 1)
 		{
-			echo "<details style='border:1px solid #fb5607;'>";
-			echo "<summary style='background-color:#fb5607; color:#fff;'>function addLead - prepared array to send to Bitrix 24(arData)</summary>";
-			echo "<pre style='background-color: #eee; padding:10px;'>";
-			print_r($arData);
-			echo "</pre>";
-			echo "</details>";
-			echo "<details>";
-			echo "<summary ".($resultBitrix24["result"]["result_error"] ? "style='background-color:#ffbe0b; color:#000;'" : "style='background-color:#fb5607; color:#fff;'" ).">function addLead - Bitrix 24 response array (resultBitrix24)</summary>";
-			echo "<pre style='background-color: #eee; padding:10px;'>";
-			print_r($resultBitrix24);
-			echo "</pre>";
-			echo "</details>";
+			$this->prepareDebugInfo("function addLead - prepared array to send to Bitrix 24(arData)",$arData);
+			$this->prepareDebugInfo("function addLead - Bitrix 24 response array (resultBitrix24)",$resultBitrix24);
+
 		}
 
 		if(!$resultBitrix24["result"]["result_error"])
@@ -770,18 +711,8 @@ private function updateContact($contact_id, $upd_info, $debug){
 		$resultBitrix24 = CRest::callBatch($arData);
 		if($debug == 1)
 		{
-			echo "<details style='border:1px solid #fb5607;'>";
-			echo "<summary style='background-color:#fb5607; color:#fff;'>function addDeal - prepared to Bitrix 24 array (arData)</summary>";
-			echo "<pre style='background-color: #eee; padding:10px;'>";
-			print_r($arData);
-			echo "</pre>";
-			echo "</details>";
-			echo "<details style='border:1px solid #fb5607;'>";
-			echo "<summary ".($resultBitrix24["result"]["result_error"] ? "style='background-color:#ffbe0b; color:#000;'" : "style='background-color:#fb5607; color:#fff;'" ).">function addDeal - Bitrix 24 response array (resultBitrix24)</summary>";
-			echo "<pre style='background-color: #eee; padding:10px;'>";
-			print_r($resultBitrix24);
-			echo "</pre>";
-			echo "</details>";
+			$this->prepareDebugInfo("function addDeal - prepared to Bitrix 24 array (arData)",$arData);
+			$this->prepareDebugInfo("function addDeal - Bitrix 24 response array (resultBitrix24)",$resultBitrix24);
 		}
 
 		return $resultBitrix24;
@@ -916,6 +847,111 @@ function onBeforeCompileHead()
 
 
     }
+
+    /*
+     * Show debug on JoomShopping checkout finish page (thankoyu page
+     * @debug_info  array   Array of debug information
+     * @since 2.4.0
+     * @todo Сделать показ ошибок не echo, а массив + цикл.
+     */
+
+
+	public function onBeforeDisplayCheckoutFinish(){
+		if($this->params->get('debug') == 1){
+			$session = Factory::getSession();
+			$debug_info = $session->get("b24debugoutput");
+			echo "<h3>WT JoomShopping Bitrix24 PRO debug information</h3><br/>".$debug_info;
+			$session->clear("b24debugoutput");
+		}
+	}
+
+
+	/*
+	 *	Integration with Radical Form plugin - https://hika.su/rasshireniya/radical-form
+	 *  Contact form plugin
+	 *  $clear 	array 	это массив данных, полученный от формы и очищенный ото всех вспомогательных данных.
+	 * 	$input 	array 	это полный массив данных, включая все вспомогательные данные о пользователе и передаваемой форме. Этот массив передается по ссылке и у вас есть возможность изменить переданные данные. В примере выше именно это и происходит, когда вместо вбитого в форму имени устанавливается фиксированная константа.
+	 *	$params obj		это объект, содержащий все параметры плагина и вспомогательные данные, которые известны при отправке формы. Например здесь можно получить адрес папки, куда были загружены фотографии (их можно переместить в нужное вам место):
+	 */
+	public function onBeforeSendRadicalForm($clear, &$input, $params)
+	{
+		$crm_host = $this->params->get('crm_host');
+		$webhook_secret = $this->params->get('crm_webhook_secret');
+		$crm_assigned_id = $this->params->get('crm_assigned');
+
+		/*
+		 * Bitrix24 CRest SDK
+		 */
+
+			define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
+			include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
+			// Array of data to send to Bitrix24
+			$qr = array(
+				'fields' => array(),
+				'params' => array("REGISTER_SONET_EVENT" => "Y")
+			);
+			//  Process form data
+			foreach ($clear as $key => $value){
+
+				if($key == "PHONE" || $key == "EMAIL"){
+
+					/*
+					 * If any phone numbers or emails are found
+					 */
+					if(is_array($value)){
+
+						$k=0;
+						foreach($value as $phone_or_email){
+							$phone_or_email_iterator = "n".$k;
+
+
+							$qr["fields"][$key][$phone_or_email_iterator] = Array(
+								"VALUE" => $phone_or_email,
+								"VALUE_TYPE" => "WORK",
+							);
+
+							$k++;
+						}//end FOREACH
+
+						/*
+						 * Single email or phone number
+						 */
+					}else{
+						$qr["fields"][$key]["n0"] = Array(
+								"VALUE" => $value,
+								"VALUE_TYPE" => "WORK",
+							);
+					}
+
+					/*
+					 * Other form data. Not email or phone
+					 */
+				} else {
+					$qr["fields"][$key] = $value;
+				}
+			}//end foreach Process form data
+
+		$result = $this->addLead($qr, "","0");
+
+	}
+
+	private function prepareDebugInfo($debug_section_header, $debug_data){
+		$session = Factory::getSession();
+		if(is_array($debug_data) || is_object($debug_data)){
+			$debug_data = print_r($debug_data,true);
+		}
+			$debug_output = $session->get("b24debugoutput");
+
+			$debug_output .= "<details style='border:1px solid #0FA2E6; margin-bottom:5px;'>";
+			$debug_output .= "<summary style='background-color:#384148; color:#fff;'>".$debug_section_header."</summary>";
+			$debug_output .= "<pre style='background-color: #eee; padding:10px;'>";
+			$debug_output .= $debug_data;
+			$debug_output .= "</pre>";
+			$debug_output .= "</details>";
+
+			$session->set("b24debugoutput", $debug_output);
+
+	}
 
 
 

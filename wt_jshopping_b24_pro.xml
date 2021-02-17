@@ -7,7 +7,7 @@
 	<creationDate>10/01/2020</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>2.3.0</version>
+    <version>2.4.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
 	<scriptfile>script.php</scriptfile>
     <files>
@@ -30,8 +30,7 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_DESC2"/>
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="3dpartyintegrations" name="3dpartyintegrations"/>
+                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="plugininfo" name="plugininfo"/>
                 <field type="text" name="crm_host"
 					label="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST" 
 					default="domain.bitrix24.ru" 
@@ -146,7 +145,7 @@
                 <field name="source_description"  type="textarea"  label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_DESCRIPTION"/>
             </fieldset>
             <fieldset name="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
-<field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS"/>
+                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS"/>
                 <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT"/>
                 <field type="radio"
                        name="product_link"
@@ -193,6 +192,9 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+            </fieldset>
+            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
+                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="3dpartyintegrations" name="3dpartyintegrations"/>
             </fieldset>
         </fields>
     </config>
