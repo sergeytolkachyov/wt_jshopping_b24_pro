@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.4.0
+ * @version     2.4.1
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -271,24 +271,9 @@ class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 	        $b24_comment .= "<a href='".JURI::root()."administrator/index.php?option=com_jshopping&controller=orders&task=show&order_id=".$order->order_id."'>See this order in JoomShopping</a>";
 	        $qr["fields"]["COMMENTS"] .= $b24_comment;
 
-			$getCookie = JFactory::getApplication()->input->cookie;
-	        $utms = array(
-	            'utm_source',
-	            'utm_medium',
-	            'utm_campaign',
-	            'utm_content',
-	            'utm_term'
-	        );
-	        foreach ($utms as $key){
-	            if($key != "utm_term"){
-	                $utm = $getCookie->get($name = $key);
-	            } else {
-	                $utm = $getCookie->get($name = $key);
-	                $utm = urldecode($utm);
-	            }
-	            $utm_name = strtoupper($key);
-	            $qr["fields"][$utm_name] .=  $utm;
-	        }
+			$this->checkUtms($qr);
+			
+			
 
 
 	        /*
@@ -658,19 +643,20 @@ private function updateContact($contact_id, $upd_info, $debug){
 	 */
 
 	private function addLead($qr,$product_rows, $debug){
-		$arData = [
-			'add_lead' => [
+		$arData["add_lead"] = array(
 				'method' => 'crm.lead.add',
 				'params' => $qr
-			],
-			'add_products' => [
-				'method' => 'crm.lead.productrows.set',
-				'params' => [
-					'id' => '$result[add_lead]',
-					'rows' => $product_rows
-				]
-			]
-		];
+			);
+			
+		if(!empty($product_rows)){
+			$arData["add_products"] = array(
+					'method' => 'crm.lead.productrows.set',
+					'params' => array(
+						'id' => '$result[add_lead]',
+						'rows' => $product_rows
+					)
+			);
+		}
 		$resultBitrix24 = CRest::callBatch($arData);
 		if($debug == 1)
 		{
@@ -927,11 +913,44 @@ function onBeforeCompileHead()
 					 * Other form data. Not email or phone
 					 */
 				} else {
-					$qr["fields"][$key] = $value;
+					
+					/*
+					*	If custom email subject (rfSubject) is exists
+					*	then set it as a lead title
+					*/
+					if($key == "rfSubject"){
+						$qr["fields"]["TITLE"] = $value;
+					}else{
+						$qr["fields"][$key] = $value;	
+					}
+					
+					
 				}
 			}//end foreach Process form data
 
-		$result = $this->addLead($qr, "","0");
+			/*
+			* Set assigned id form plugin params
+			*/
+			
+			if(!empty($this->params->get("assigned_by_id"))){
+		        $qr["fields"]["ASSIGNED_BY_ID"] = $this->params->get("assigned_by_id");
+			}
+			
+			/*
+			* Lead source form plugin params
+			*/
+			$qr["fields"]["SOURCE_ID"] = $this->params->get("lead_source");
+			
+			/*
+			* Add UTMs into array
+			*/
+			
+			$this->checkUtms($qr);
+
+			/*
+			* Create a lead
+			*/
+			$result = $this->addLead($qr, "","0");
 
 	}
 
@@ -952,7 +971,35 @@ function onBeforeCompileHead()
 			$session->set("b24debugoutput", $debug_output);
 
 	}
-
+	
+	/*
+	*	Function checks the utm marks and set its to array fields
+	*	@param  $qr		array	Bitrix24 array data
+	*	@return			array	Bitrix24 array data with UTMs
+	*	@since	2.4.1
+	*/
+	
+	
+	private function checkUtms(&$qr){
+		$getCookie = Factory::getApplication()->input->cookie;
+	        $utms = array(
+	            'utm_source',
+	            'utm_medium',
+	            'utm_campaign',
+	            'utm_content',
+	            'utm_term'
+	        );
+	        foreach ($utms as $key){
+	            if($key != "utm_term"){
+	                $utm = $getCookie->get($name = $key);
+	            } else {
+	                $utm = $getCookie->get($name = $key);
+	                $utm = urldecode($utm);
+	            }
+	            $utm_name = strtoupper($key);
+	            $qr["fields"][$utm_name] .=  $utm;
+	        }
+	}
 
 
 }//plgSystemWt_jshopping_b24_pro

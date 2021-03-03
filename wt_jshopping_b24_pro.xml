@@ -4,10 +4,10 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>10/01/2020</creationDate>
+	<creationDate>02/03/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>2.4.0</version>
+    <version>2.4.1</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
 	<scriptfile>script.php</scriptfile>
     <files>
@@ -143,6 +143,7 @@
                     <option value="STORE">PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_ID_STORE</option>
                 </field>
                 <field name="source_description"  type="textarea"  label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_DESCRIPTION"/>
+				
             </fieldset>
             <fieldset name="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
                 <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS"/>
