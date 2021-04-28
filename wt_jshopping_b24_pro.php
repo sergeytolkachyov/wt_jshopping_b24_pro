@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.4.1
+ * @version     2.5.0
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,7 +13,7 @@ use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Factory;
-
+use Joomla\CMS\Input\Input;
 
 class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 {
@@ -45,22 +45,27 @@ class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 		parent::__construct( $subject, $config );
         $this->loadLanguage();
 
-    }
+		$crm_host = $this->params->get('crm_host');
+		$webhook_secret = $this->params->get('crm_webhook_secret');
+        $crm_assigned_id = $this->params->get('crm_assigned');
+        if(!empty($crm_host ) && !empty($webhook_secret) && !empty($crm_assigned_id)){
+			define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
+        }else{
+	        if($this->params->get('debug') == 1){
+		        $this->prepareDebugInfo("Bitrix 24 conntection statis",JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_NOT_CONNECTED"));
+	        }
+        }
+
+	}
 
 
     public function onAfterCreateOrderFull($order,$cart)
     {
 	    $session = Factory::getSession();
-        $crm_host = $this->params->get('crm_host');
-        $webhook_secret = $this->params->get('crm_webhook_secret');
-        $crm_assigned_id = $this->params->get('crm_assigned');
 
-    if(empty($crm_host) or empty($webhook_secret) or empty($crm_assigned_id)){
-	    echo JText::_("PLG_WT_JSHOPPING_B24_PRO_B24_NOT_CONNECTED");
-	}else{
 
-        define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
         include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
+
         require_once (JPATH_SITE.'/components/com_jshopping/lib/factory.php');
         require_once (JPATH_SITE.'/components/com_jshopping/lib/functions.php');
         $jshopConfig = JSFactory::getConfig();
@@ -347,10 +352,10 @@ class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 				        $qr["fields"]["COMMENTS"] .= $this->prepareDataToSaveToComment($requisites, JText::_('PLG_WT_JSHOPPING_B24_PRO_ALERT_MESSAGE_1'));
 
 				        if($plugin_mode == "lead"){
-				        	$this->addLead($qr,$product_rows,$debug);
+				        	$this->addLead($qr,$product_rows,$debug,$order->order_id);
 					        return;
 				        } elseif ($plugin_mode == "deal"){
-					        $this->addDeal($qr,$product_rows,$debug);
+					        $this->addDeal($qr,$product_rows,$debug,$order->order_id);
 					        return;
 				        }
 
@@ -370,10 +375,10 @@ class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 				        $qr["fields"]["COMMENTS"] .= $this->prepareDataToSaveToComment($requisites, JText::_('PLG_WT_JSHOPPING_B24_PRO_ALERT_MESSAGE_2'));
 
 				        if($plugin_mode == "lead"){
-					        $this->addLead($qr,$product_rows,$debug);
+					        $this->addLead($qr,$product_rows,$debug,$order->order_id);
 					        return;
 				        } elseif ($plugin_mode == "deal"){
-					        $this->addDeal($qr,$product_rows,$debug);
+					        $this->addDeal($qr,$product_rows,$debug,$order->order_id);
 					        return;
 				        }
 
@@ -498,21 +503,26 @@ class plgSystemWt_jshopping_b24_pro extends CMSPlugin
 			        /*
 		        	 * Добавляем сделку
 		        	 */
-			        $this->addDeal($qr, $product_rows, $debug);
+			        $b24result = $this->addDeal($qr, $product_rows, $debug, $order->order_id);
 		        } elseif($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1) {
 		        	/*
 		        	 * Добавляем лид
 		        	 */
-			        $this->addLead($qr, $product_rows, $debug);
+			        $b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
 		        }
 
 	        } else { // Простой лид
-		        $this->addLead($qr, $product_rows, $debug);
+		        $b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
 	        }
 
 
+	    if($debug == 1){
+		    $this->prepareDebugInfo("Bitrix24 result array",$b24result);
+	    }
 
-        }//If b24 configured
+	        //$this->setBitrix24LeadOrDealRelationshipToOrder();
+
+
     }// END onBeforeDisplayCheckoutFinish
 
 /** Add Contact to Bitrix24
@@ -637,12 +647,13 @@ private function updateContact($contact_id, $upd_info, $debug){
 	 * @param array $qr mixed array with contact and deal data
 	 * @param array $product_rows product rows for lead
 	 * @param string $debug to enable debug data from function
+	 * @param int    $order_id JoomShopping order id for saving JoomShopping and Bitrix24 entitie's relationship to database
 	 * @return array Bitrix24 response array
 	 *
 	 * @since version 2.0.0-beta1
 	 */
 
-	private function addLead($qr,$product_rows, $debug){
+	private function addLead($qr,$product_rows, $debug, $order_id){
 		$arData["add_lead"] = array(
 				'method' => 'crm.lead.add',
 				'params' => $qr
@@ -667,6 +678,8 @@ private function updateContact($contact_id, $upd_info, $debug){
 
 		if(!$resultBitrix24["result"]["result_error"])
 		{
+			//Сохраняем id лида в свою таблицу в базе
+			$this->setBitrix24LeadOrDealRelationshipToOrder($order_id,"lead",$resultBitrix24["result"]["result"]["add_lead"]);
 			return $resultBitrix24;
 		} else {
 			return false;
@@ -676,11 +689,12 @@ private function updateContact($contact_id, $upd_info, $debug){
 	 * @param array $qr array with deal data
 	 * @param array $product_rows product rows for lead
 	 * @param array $debug boolean to enable debug data from function
+	 * @param int    $order_id JoomShopping order id for saving JoomShopping and Bitrix24 entitie's relationship to database
 	 * @return array Bitrix24 response array
 	 *
 	 * @since version 2.0.0-beta1
 	 */
-	private function addDeal($qr,$product_rows, $debug){
+	private function addDeal($qr,$product_rows, $debug, $order_id){
 		$arData = [
 			'add_deal' => [
 				'method' => 'crm.deal.add',
@@ -695,13 +709,21 @@ private function updateContact($contact_id, $upd_info, $debug){
 			]
 		];
 		$resultBitrix24 = CRest::callBatch($arData);
+
 		if($debug == 1)
 		{
 			$this->prepareDebugInfo("function addDeal - prepared to Bitrix 24 array (arData)",$arData);
 			$this->prepareDebugInfo("function addDeal - Bitrix 24 response array (resultBitrix24)",$resultBitrix24);
 		}
 
-		return $resultBitrix24;
+		if(!$resultBitrix24["result"]["result_error"])
+		{
+			//Сохраняем id лида в свою таблицу в базе
+			$this->setBitrix24LeadOrDealRelationshipToOrder($order_id,"deal",$resultBitrix24["result"]["result"]["add_deal"]);
+			return $resultBitrix24;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -843,6 +865,7 @@ function onBeforeCompileHead()
 
 
 	public function onBeforeDisplayCheckoutFinish(){
+
 		if($this->params->get('debug') == 1){
 			$session = Factory::getSession();
 			$debug_info = $session->get("b24debugoutput");
@@ -869,7 +892,7 @@ function onBeforeCompileHead()
 		 * Bitrix24 CRest SDK
 		 */
 
-			define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
+			//define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
 			include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
 			// Array of data to send to Bitrix24
 			$qr = array(
@@ -940,7 +963,7 @@ function onBeforeCompileHead()
 			* Lead source form plugin params
 			*/
 			$qr["fields"]["SOURCE_ID"] = $this->params->get("lead_source");
-			
+			$qr["fields"]["COMMENTS"] .= "<br/>".$input["pagetitle"]."<br/><a href='".$input["url"]."'>".$input["url"]."</a>";
 			/*
 			* Add UTMs into array
 			*/
@@ -951,7 +974,6 @@ function onBeforeCompileHead()
 			* Create a lead
 			*/
 			$result = $this->addLead($qr, "","0");
-
 	}
 
 	private function prepareDebugInfo($debug_section_header, $debug_data){
@@ -999,6 +1021,193 @@ function onBeforeCompileHead()
 	            $utm_name = strtoupper($key);
 	            $qr["fields"][$utm_name] .=  $utm;
 	        }
+	}
+
+	/*
+	 * Function for inbound connections from Bitrix 24
+	 * @param   $qr		array	Bitrix24 array data
+	 * @return
+	 * @since	2.5.0
+	 */
+	public function onAjaxWt_jshopping_b24_pro(){
+		$app = Factory::getApplication();
+		$token = $app->input->get->get("token","","raw");
+		$b24_auth_data = $app->input->post->get("auth");
+		$b24_app_token = $b24_auth_data["application_token"];
+
+		// Включены ли входящие подключения из Битрикс 24
+		// Проверка токена из handler url
+		// Проверка токена приложения из Битрикс24
+		if($this->params->get('bitrix24_inbound_integration') == 1 && $token == md5(JUri::root()) && $b24_app_token === $this->params->get("bitrix24_application_token")){
+			include_once("plugins/system/wt_jshopping_b24_pro/lib/crest.php");
+			$b24_event = $app->input->post->get("event");
+			$b24_data = $app->input->post->get("data");
+
+			/*
+			* ONCRMLEADUPDATE - Обновление/создание лида
+			*/
+			if($b24_event == "ONCRMLEADUPDATE"){
+
+				$b24_inbound_entity_data = $this->getLead($b24_data["FIELDS"]["ID"]);
+
+			/*
+			* ONCRMDEALDUPDATE - Создание сделки
+			*/
+			} elseif($b24_event == "ONCRMDEALADD"){
+
+				$b24_inbound_entity_data = $this->getDeal($b24_data["FIELDS"]["ID"]);
+				//Если сделка создана в результате конвертации лида,
+				// то добавляем id сделки к существующей записи с id лида.
+				if(!empty($b24_inbound_entity_data["result"]["LEAD_ID"])){
+					$this->addBitrix24DealIdToRelationship($b24_inbound_entity_data["result"]["LEAD_ID"],$b24_inbound_entity_data["result"]["ID"]);
+				}
+
+			/*
+			* ONCRMDEALDUPDATE - Создание сделки
+			*/
+			} elseif($b24_event == "ONCRMDEALUPDATE"){
+
+				$b24_inbound_entity_data = $this->getDeal($b24_data["FIELDS"]["ID"]);
+			}
+
+
+				//Проходим массив сабформы с настройками сопоставлений статусов JoomShopping и Битрикс24
+				foreach ($this->params->get("order_status_b24_stages") as $stage){
+
+					if($stage->b24_inbound_event_name == "ONCRMLEADUPDATE"){
+						//Получаем статус лида, если лид из Битрикс 24
+						$b24_status_or_stage = $b24_inbound_entity_data["result"]["STATUS_ID"];
+						//Тип события из настроек сабформы - лид
+						$b24_status_or_stage_in_joomla = $stage->b24_inbound_lead_status;
+						$bitrix24_entity_type = "lead";
+
+					} elseif($stage->b24_inbound_event_name == "ONCRMDEALUPDATE"){
+						//Получаем стадию сделки, если сделка из Битрикс 24
+						$b24_status_or_stage = $b24_inbound_entity_data["result"]["STAGE_ID"];
+						$b24_status_or_stage_in_joomla = $stage->b24_inbound_deal_stage;
+						$bitrix24_entity_type = "deal";
+					}
+
+					//Меняем статус заказа и отправляем уведомления на email
+					if($b24_status_or_stage_in_joomla == $b24_status_or_stage){
+							$this->updateJShoppingOrderHistory($stage->jshopping_order_status, $bitrix24_entity_type,$b24_inbound_entity_data["result"]["ID"],$stage->order_status_custom_text);
+						}
+				}//end foreach
+		}//Включены ли входящие подключения из Битрикс 24
+	} // onAjax
+
+
+	/*
+	*	Function to get lead info from Bitrix24
+	*	@param 	string	lead id in Bitrix 24
+	*	@return	object	lead info object
+	*	@since	2.5.0
+	*/
+
+	private function getLead($lead_id){
+		if (!empty($lead_id)){
+			$arData = array(
+				"ID" => $lead_id
+			);
+			$resultBitrix24 = CRest::call(
+				'crm.lead.get',
+				[
+					'ID' => $lead_id
+				]
+			);
+			return $resultBitrix24;
+		}
+	} //getLead
+
+	/*
+	*	Function to get deal info from Bitrix24
+	*	@param 	string	lead id in Bitrix 24
+	*	@return	object	lead info object
+	*	@since	2.5.0
+	*/
+
+	private function getDeal($deal_id){
+		if (!empty($deal_id)){
+			$arData = array(
+				"ID" => $deal_id
+			);
+			$resultBitrix24 = CRest::call(
+				'crm.deal.get',
+				[
+					'ID' => $deal_id
+				]
+			);
+
+			return $resultBitrix24;
+		}
+	} //getDeal
+
+
+	/**
+	 * Function for updating JoomShopping order history
+	 * @param $bitrix24_entity_type     string  Bitrix24 entity type: lead or deal
+	 * @param $bitrix24_entity_id       int     Bitrix 24 lead or deal id
+	 * @param $additional_text          string  Additional text from plugin's settings for order history
+	 * @since	2.5.0
+	 */
+	private function updateJShoppingOrderHistory($jshopping_order_status_id, $bitrix24_entity_type, $bitrix24_entity_id, $additional_text = null){
+		require_once (JPATH_SITE.'/components/com_jshopping/lib/factory.php');
+		require_once (JPATH_SITE.'/components/com_jshopping/lib/functions.php');
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true)
+			->select('jshopping_order_id')
+			->from('#__wt_jshopping_bitrix24_pro')
+			->where('bitrix24_'.$bitrix24_entity_type.'_id = ' . $bitrix24_entity_id);
+		$db->setQuery($query)->execute();
+		$jshopping_order_id = $db->loadResult();
+		if(!empty($jshopping_order_id)){
+			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_jshopping/models');
+			$orderChangeStatusModel = JModelLegacy::getInstance('orderChangeStatus', 'jshop');
+			$orderChangeStatusModel->setData($jshopping_order_id,$jshopping_order_status_id,1,$jshopping_order_status_id,1,$additional_text,1,0);
+			$orderChangeStatusModel->store();
+		}
+	}//updateJShoppingOrderHistory
+
+
+
+
+	/*
+	 * Function to save JoomShopping orders and Bitrix24 leads/deals relationships in database
+	 * when new lead or deal was created
+	 * @param $jshopping_order_id       int     joomshopping order id
+	 * @param $bitrix24_entity_type     string  Bitrix24 entity type: lead or deal
+	 * @param $bitrix24_entity_id       int     Bitrix 24 lead or deal id
+	 * @since   2.5.0
+	 */
+
+	private function setBitrix24LeadOrDealRelationshipToOrder($jshopping_order_id, $bitrix24_entity_type, $bitrix24_entity_id){
+		$db = Factory::getDbo();
+		$bitrix24_entity_type = 'bitrix24_'.$bitrix24_entity_type.'_id';
+		$columns = array('jshopping_order_id', $bitrix24_entity_type);
+		$values = array($jshopping_order_id, $bitrix24_entity_id);
+
+		$query = $db->getQuery(true);
+		$query->insert($db->quoteName('#__wt_jshopping_bitrix24_pro'))
+			->columns($db->quoteName($columns))
+			->values(implode(',', $values));
+		$db->setQuery($query)->execute();
+	}
+
+	/*
+	 * Function to add Bitrix24 deal id to JoomShopping orders and Bitrix24 leads/deals relationships in database.
+	 * If lead was converted to deal - save deal id to database.
+	 * @param $bitrix24_lead_id     int     Bitrix 24 lead id
+	 * @param $bitrix24_deal_id     int     Bitrix 24 deal id
+	 * @since   2.5.0
+	 */
+
+	private function addBitrix24DealIdToRelationship($bitrix24_lead_id = null,$bitrix24_deal_id = null){
+		$db = Factory::getDbo();
+		$query = $db->getQuery(true);
+		$query->update($db->quoteName('#__wt_jshopping_bitrix24_pro'))
+			->set($db->quoteName("bitrix24_deal_id") ." = ". $bitrix24_deal_id)
+			->where($db->quoteName("bitrix24_lead_id") ." = ". $bitrix24_lead_id);
+		$db->setQuery($query)->execute();
 	}
 
 

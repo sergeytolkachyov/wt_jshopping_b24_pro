@@ -26,9 +26,10 @@ class JFormFieldB24leadstatus extends JFormFieldList
 		$crm_host = (!empty($params->crm_host) ? $params->crm_host : '');
 		$webhook_secret = (!empty($params->crm_webhook_secret) ? $params->crm_webhook_secret : '');
 		$crm_assigned_id = (!empty($params->crm_assigned) ? $params->crm_assigned : '');
+		$plugin_mode = $params->lead_vs_deal;
 		if(!empty($crm_host)&&!empty($webhook_secret)&&!empty($crm_assigned_id))
 		{
-			define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
+			//define('C_REST_WEB_HOOK_URL', 'https://' . $crm_host . '/rest/' . $crm_assigned_id . '/' . $webhook_secret . '/');//url on creat Webhook
 
 			include_once(JPATH_SITE . "/plugins/system/wt_jshopping_b24_pro/lib/crest.php");
 

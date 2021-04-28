@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fieldset name="order_status_b24_stages_from_b24" label="Битрикс 24">
+        <field type="radio" name="b24_inbound_event_name" label="PLG_WT_JSHOPPING_B24_PRO_B24_INBOUND_EVENT_NAME" class="btn-group btn-yesno">
+            <option value="ONCRMLEADUPDATE">ONCRMLEADUPDATE</option>
+            <option value="ONCRMDEALUPDATE">ONCRMDEALUPDATE</option>
+        </field>
+        <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24leadstatus"  name="b24_inbound_lead_status" label="Lead status" showon="b24_inbound_event_name:ONCRMLEADUPDATE">
+            <option value=""/>
+        </field>
+        <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24ldealstage"  name="b24_inbound_deal_stage" label="Deal stage" showon="b24_inbound_event_name:ONCRMDEALUPDATE">
+            <option value=""/>
+        </field>
+    </fieldset>
+
+    <fieldset name="order_status_b24_stages_jshopping_status" label="JoomShopping">
+        <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="jshoppingorderstatus"  name="jshopping_order_status" label="JoomShopping order status">
+            <option value=""/>
+        </field>
+    </fieldset>
+    <fieldset name="order_status_b24_stages_additional" label="PLG_WT_JSHOPPING_B24_PRO_ORDER_STATUS_B24_STAGES_ADDITIONAL">
+        <field type="textarea" name="order_status_custom_text" label="PLG_WT_JSHOPPING_B24_PRO_ORDER_STATUS_CUSTOM_TEXT"/>
+    </fieldset>
+
+</form>

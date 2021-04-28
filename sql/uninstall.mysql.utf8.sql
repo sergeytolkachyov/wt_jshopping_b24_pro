@@ -1,0 +1,1 @@
+DROP TABLE #__wt_jshopping_bitrix24_pro ;

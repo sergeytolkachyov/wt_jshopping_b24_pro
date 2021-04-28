@@ -27,7 +27,7 @@ class JFormFieldB24ldealstage extends JFormFieldList
 		$webhook_secret = (!empty($params->crm_webhook_secret) ? $params->crm_webhook_secret : '');
 		$crm_assigned_id = (!empty($params->crm_assigned) ? $params->crm_assigned : '');
 		$deal_category = (!empty($params->deal_category) ? $params->deal_category : '');
-
+		$plugin_mode = $params->lead_vs_deal;
 
 		if(!empty($crm_host)&&!empty($webhook_secret)&&!empty($crm_assigned_id))
 		{

@@ -4,10 +4,10 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>02/03/2021</creationDate>
+	<creationDate>05/03/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>2.4.1</version>
+    <version>2.5.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
 	<scriptfile>script.php</scriptfile>
     <files>
@@ -19,6 +19,7 @@
         <folder>subform</folder>
         <folder>fields</folder>
 		<folder>js</folder>
+		<folder>sql</folder>
     </files>
 	<languages folder="language" client="administrator">
 
@@ -27,6 +28,21 @@
         <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.sys.ini</language>
         <language tag="ru-RU">ru-RU/ru-RU.plg_system_wt_jshopping_b24_pro.sys.ini</language>
     </languages>
+    <install>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/install.mysql.utf8.sql</file>
+        </sql>
+    </install>
+    <uninstall>
+        <sql>
+            <file driver="mysql" charset="utf8">sql/uninstall.mysql.utf8.sql</file>
+        </sql>
+    </uninstall>
+    <update>
+        <schemas>
+            <schemapath type="mysql">sql/updates/mysql</schemapath>
+        </schemas>
+    </update>
     <config>
         <fields name="params">
             <fieldset name="basic">
@@ -196,6 +212,37 @@
             </fieldset>
             <fieldset name="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
                 <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="3dpartyintegrations" name="3dpartyintegrations"/>
+            </fieldset>
+            <fieldset name="Inbound_Bitrix24">
+                <!-- Входящая интеграция с Битрикс 24-->
+                <field type="radio"
+                       name="bitrix24_inbound_integration"
+                       label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_INTEGRATION"
+                       default="0" class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24outgoinghandlerurl" showon="bitrix24_inbound_integration:1"/>
+                <field type="password" name="bitrix24_application_token" label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_APPLICATION_TOKEN" showon="bitrix24_inbound_integration:1"/>
+                <field type="radio"
+                       name="bitrix24_inbound_update_jshopping_order_statuses"
+                       label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_ORDER_STATUSES"
+                       class="btn-group btn-group-yesno"
+                       default="0"
+                       showon="bitrix24_inbound_integration:1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field name="order_status_b24_stages"
+                       label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_ORDER_STATUS_B24_STAGES"
+                       type="subform"
+                       layout="joomla.form.field.subform.repeatable-table"
+                       formsource="/plugins/system/wt_jshopping_b24_pro/subform/order_status_b24_stages.xml"
+                       multiple="true"
+                       buttons="add,remove"
+                       showon="bitrix24_inbound_integration:1[AND]bitrix24_inbound_update_jshopping_order_statuses:1"
+                       groupByFieldset="true"
+                />
             </fieldset>
         </fields>
     </config>
