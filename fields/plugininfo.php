@@ -48,20 +48,84 @@ class JFormFieldPlugininfo extends JFormFieldSpacer
 			.wt-b24-plugin-info{
 				box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); 
 				padding:1rem; 
-				margin-bottom:2 rem;
+				margin-bottom: 2rem;
+				display:flex;
+				
 			}
+			.plugin-info-img{
+			    margin-right:auto;
+			    max-width: 100%;
+			}
+			.webhook-info {
+                display:flex;
+                flex-direction:column;
+                align-itmes:center;
+                justify-content:center
+                margin-left: auto;
+			}
+			.webhook-info span {
+			    text-align:center;
+			}
+			.webhook-info img{
+			    width:64px;
+			    margin: 0 auto;
+			   }
 		");
 
 		$wtb24_plugin_info = simplexml_load_file(JPATH_SITE."/plugins/system/wt_jshopping_b24_pro/wt_jshopping_b24_pro.xml");
 
+		if(PluginHelper::isEnabled('system', 'wt_jshopping_b24_pro') === true)
+		{
+			$plugin          = PluginHelper::getPlugin('system', 'wt_jshopping_b24_pro');
+			$params          = (!empty($plugin->params) ? json_decode($plugin->params) : '');
+			$crm_host        = (!empty($params->crm_host) ? $params->crm_host : '');
+			$webhook_secret  = (!empty($params->crm_webhook_secret) ? $params->crm_webhook_secret : '');
+			$crm_assigned_id = (!empty($params->crm_assigned) ? $params->crm_assigned : '');
+
+			if (!empty($crm_host) && !empty($webhook_secret) && !empty($crm_assigned_id))
+			{
+				include_once(JPATH_SITE . "/plugins/system/wt_jshopping_b24_pro/lib/crest.php");
+
+				$resultBitrix24 = CRest::call("profile", ["id" => $crm_assigned_id]);
+
+
+				if (isset($resultBitrix24["result"]))
+				{
+					if ($resultBitrix24["result"]["ADMIN"] == 1){
+						$is_admin = Text::_('JYES');
+					} else{
+						$is_admin =	Text::_('JNO');
+					}
+					$webhook_info = '<div class="webhook-info">
+                        <span><img class="img-polaroid" src="'.$resultBitrix24["result"]["PERSONAL_PHOTO"].'"/></span>
+                        <p><strong>Assigned:</strong> '.$resultBitrix24["result"]["NAME"].' '.$resultBitrix24["result"]["LAST_NAME"].'</p> 
+                        <p><strong>Assigned ID:</strong> '.$resultBitrix24["result"]["ID"].'</p>
+                        <p><strong>Is admin:</strong> '.$is_admin.'</p>
+                    </div>';
+
+                } elseif (isset($resultBitrix24['error'])){
+					JError::raiseWarning('',"<strong>Bitrix 24 Error:</strong> ".$resultBitrix24['error']." ".$resultBitrix24['error_description']);
+					$webhook_info = '<div class="alert alert-danger webhook-info"><strong>Bitrix 24 Error</strong> <p>'.$resultBitrix24['error'].'</p><p>'.$resultBitrix24['error_description'].'</p></div>';
+				}
+			}else{
+				$webhook_info = '<div class="alert alert-danger ">Not connected to Bitrix 24</div>';
+            }
+		}
+
+
+
+
 
 		?>
-		<div class="media wt-b24-plugin-info">
-			<img class="media-object pull-left" src="../plugins/system/wt_jshopping_b24_pro/img/bitrix24-logo.jpg"/>
-			<div class="media-body">
+		<div class="wt-b24-plugin-info">
+            <div class="plugin-info-img">
+			    <img class="plugin-info-img" src="../plugins/system/wt_jshopping_b24_pro/img/bitrix24-logo.jpg"/>
+            </div>
+			<div style="padding: 0px 15px;">
 				<span class="label label-success">v.<?php echo $wtb24_plugin_info->version; ?></span>
 				<?php echo Text::_("PLG_WT_JSHOPPING_B24_PRO_DESC2"); ?>
 			</div>
+            <?php echo $webhook_info;?>
 		</div>
 <?php
 
@@ -79,20 +143,5 @@ class JFormFieldPlugininfo extends JFormFieldSpacer
 		return $this->getLabel();
 	}
 
-	/**
-	 * Method to get a control group with label and input.
-	 *
-	 * @param   array  $options  Options to be passed into the rendering of the field
-	 *
-	 * @return  string  A string containing the html for the control group
-	 *
-	 * @since   3.7.3
-	 */
-	public function renderField($options = array())
-	{
-		$options['class'] = empty($options['class']) ? 'field-spacer' : $options['class'] . ' field-spacer';
-
-		return parent::renderField($options);
-	}
 }
 ?>

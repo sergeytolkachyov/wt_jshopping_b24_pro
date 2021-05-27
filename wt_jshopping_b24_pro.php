@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.5.1
+ * @version     2.5.2
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -541,7 +541,7 @@ private function addContact($contact, $debug){
 		$this->prepareDebugInfo("function addContact - Bitrix 24 response array",$resultBitrix24);
 	}
 
-	if($resultBitrix24["result"]["result_error"]){
+	if(isset($resultBitrix24["result"]["result_error"]) || isset($resultBitrix24["error"])){
 		return false;
 	} else {
 		return $resultBitrix24["result"];
@@ -604,7 +604,7 @@ private function addRequisites($contact_id,$requisites,$debug){
 		$this->prepareDebugInfo("function addRequisites - addRequisites section - <- respone array from Bitrix 24",$resultRequisite);
 		$this->prepareDebugInfo("function addRequisites - addAddress (to requisite) section -  <- respone array from Bitrix 24",$resultAddress);
 	}
-	if($resultRequisite["result"]["result_error"]){
+	if(isset($resultRequisite["result"]["result_error"]) || isset($resultBitrix24["error"])){
 		return false;
 	} else {
 		return true;
@@ -633,7 +633,7 @@ private function updateContact($contact_id, $upd_info, $debug){
 		$this->prepareDebugInfo("function updateContact <- respone array from Bitrix 24",$req_crm_contact_fields);
 	}
 
-	if($req_crm_contact_fields["result"]["result_error"])
+	if(isset($req_crm_contact_fields["result"]["result_error"]) || isset($resultBitrix24["error"]))
 	{
 		return false;
 	} else{
@@ -676,7 +676,7 @@ private function updateContact($contact_id, $upd_info, $debug){
 
 		}
 
-		if(!$resultBitrix24["result"]["result_error"] && !is_null($order_id))
+		if(!isset($resultBitrix24["error"]) && !is_null($order_id))
 		{
 			//Сохраняем id лида в свою таблицу в базе
 			$this->setBitrix24LeadOrDealRelationshipToOrder($order_id,"lead",$resultBitrix24["result"]["result"]["add_lead"]);
@@ -716,7 +716,7 @@ private function updateContact($contact_id, $upd_info, $debug){
 			$this->prepareDebugInfo("function addDeal - Bitrix 24 response array (resultBitrix24)",$resultBitrix24);
 		}
 
-		if(!$resultBitrix24["result"]["result_error"])
+		if(!isset($resultBitrix24["result"]["result_error"]) || !isset($resultBitrix24["error"]))
 		{
 			//Сохраняем id лида в свою таблицу в базе
 			$this->setBitrix24LeadOrDealRelationshipToOrder($order_id,"deal",$resultBitrix24["result"]["result"]["add_deal"]);
@@ -1184,16 +1184,18 @@ function onBeforeCompileHead()
 	 */
 
 	private function setBitrix24LeadOrDealRelationshipToOrder($jshopping_order_id, $bitrix24_entity_type, $bitrix24_entity_id){
-		$db = Factory::getDbo();
-		$bitrix24_entity_type = 'bitrix24_'.$bitrix24_entity_type.'_id';
-		$columns = array('jshopping_order_id', $bitrix24_entity_type);
-		$values = array($jshopping_order_id, $bitrix24_entity_id);
+		if(!empty($jshopping_order_id) && !empty($bitrix24_entity_type) && !empty($bitrix24_entity_id)){
+			$db = Factory::getDbo();
+			$bitrix24_entity_type = 'bitrix24_'.$bitrix24_entity_type.'_id';
+			$columns = array('jshopping_order_id', $bitrix24_entity_type);
+			$values = array($jshopping_order_id, $bitrix24_entity_id);
 
-		$query = $db->getQuery(true);
-		$query->insert($db->quoteName('#__wt_jshopping_bitrix24_pro'))
-			->columns($db->quoteName($columns))
-			->values(implode(',', $values));
-		$db->setQuery($query)->execute();
+			$query = $db->getQuery(true);
+			$query->insert($db->quoteName('#__wt_jshopping_bitrix24_pro'))
+				->columns($db->quoteName($columns))
+				->values(implode(',', $values));
+			$db->setQuery($query)->execute();
+		}
 	}
 
 	/*
