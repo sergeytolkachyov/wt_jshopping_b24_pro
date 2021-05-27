@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.5.0
+ * @version     2.5.1
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -653,7 +653,7 @@ private function updateContact($contact_id, $upd_info, $debug){
 	 * @since version 2.0.0-beta1
 	 */
 
-	private function addLead($qr,$product_rows, $debug, $order_id){
+	private function addLead($qr,$product_rows, $debug, $order_id = null){
 		$arData["add_lead"] = array(
 				'method' => 'crm.lead.add',
 				'params' => $qr
@@ -676,7 +676,7 @@ private function updateContact($contact_id, $upd_info, $debug){
 
 		}
 
-		if(!$resultBitrix24["result"]["result_error"])
+		if(!$resultBitrix24["result"]["result_error"] && !is_null($order_id))
 		{
 			//Сохраняем id лида в свою таблицу в базе
 			$this->setBitrix24LeadOrDealRelationshipToOrder($order_id,"lead",$resultBitrix24["result"]["result"]["add_lead"]);
@@ -884,6 +884,7 @@ function onBeforeCompileHead()
 	 */
 	public function onBeforeSendRadicalForm($clear, &$input, $params)
 	{
+		
 		$crm_host = $this->params->get('crm_host');
 		$webhook_secret = $this->params->get('crm_webhook_secret');
 		$crm_assigned_id = $this->params->get('crm_assigned');
@@ -899,6 +900,7 @@ function onBeforeCompileHead()
 				'fields' => array(),
 				'params' => array("REGISTER_SONET_EVENT" => "Y")
 			);
+			
 			//  Process form data
 			foreach ($clear as $key => $value){
 
@@ -951,6 +953,7 @@ function onBeforeCompileHead()
 				}
 			}//end foreach Process form data
 
+			
 			/*
 			* Set assigned id form plugin params
 			*/
