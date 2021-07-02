@@ -1,11 +1,8 @@
-<?
-// No direct access
-defined( '_JEXEC' ) or die;
+<?php
+	require_once (__DIR__.'/settings.php');
+
 	/**
-	 * @license     MIT License
-	 * @since 1.0
- 	 * @version 1.31
-	 *  
+	 *  @version 1.36
 	 *  define:
 	 *      C_REST_WEB_HOOK_URL = 'https://rest-api.bitrix24.com/rest/1/doutwqkjxgc3mgc1/'  //url on creat Webhook
 	 *      or
@@ -17,13 +14,14 @@ defined( '_JEXEC' ) or die;
 	 *      C_REST_LOGS_DIR = __DIR__ .'/logs/' //directory path to save the log
 	 *      C_REST_LOG_TYPE_DUMP = true //logs save var_export for viewing convenience
 	 *      C_REST_IGNORE_SSL = true //turn off validate ssl by curl
-	 **/
+	 */
 
-define('C_REST_BLOCK_LOG',true);
 	class CRest
 	{
+		const VERSION = '1.36';
 		const BATCH_COUNT    = 50;//count batch 1 query
 		const TYPE_TRANSPORT = 'json';// json or xml
+
 		/**
 		 * call where install application even url
 		 * only for rest application, not webhook
@@ -106,6 +104,8 @@ define('C_REST_BLOCK_LOG',true);
 					$obCurl = curl_init();
 					curl_setopt($obCurl, CURLOPT_URL, $url);
 					curl_setopt($obCurl, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($obCurl, CURLOPT_POSTREDIR, 10);
+					curl_setopt($obCurl, CURLOPT_USERAGENT, 'Bitrix24 CRest PHP ' . static::VERSION);
 					if($sPostFields)
 					{
 						curl_setopt($obCurl, CURLOPT_POST, true);
@@ -180,12 +180,33 @@ define('C_REST_BLOCK_LOG',true);
 				}
 				catch(Exception $e)
 				{
+					static::setLog(
+						[
+							'message' => $e->getMessage(),
+							'code' => $e->getCode(),
+							'trace' => $e->getTrace(),
+							'params' => $arParams
+						],
+						'exceptionCurl'
+					);
+
 					return [
-						'error'             => 'exception',
-						'error_information' => $e -> getMessage(),
+						'error' => 'exception',
+						'error_exception_code' => $e->getCode(),
+						'error_information' => $e->getMessage(),
 					];
 				}
 			}
+			else
+			{
+				static::setLog(
+					[
+						'params' => $arParams
+					],
+					'emptySetting'
+				);
+			}
+
 			return [
 				'error'             => 'no_install_app',
 				'error_information' => 'error install app, pls install local application '
@@ -254,7 +275,7 @@ define('C_REST_BLOCK_LOG',true);
 					if(!empty($data[ 'method' ]))
 					{
 						$i++;
-						if(static::BATCH_COUNT > $i)
+						if(static::BATCH_COUNT >= $i)
 						{
 							$arDataRest[ 'cmd' ][ $key ] = $data[ 'method' ];
 							if(!empty($data[ 'params' ]))
@@ -512,11 +533,24 @@ define('C_REST_BLOCK_LOG',true);
 					$path = __DIR__ . '/logs/';
 				}
 				$path .= date("Y-m-d/H") . '/';
-				@mkdir($path, 0775, true);
+
+				if (!file_exists($path))
+				{
+					@mkdir($path, 0775, true);
+				}
+
 				$path .= time() . '_' . $type . '_' . rand(1, 9999999) . 'log';
 				if(!defined("C_REST_LOG_TYPE_DUMP") || C_REST_LOG_TYPE_DUMP !== true)
 				{
-					$return = file_put_contents($path . '.json', static::wrapData($arData));
+					$jsonLog = static::wrapData($arData);
+					if ($jsonLog === false)
+					{
+						$return = file_put_contents($path . '_backup.txt', var_export($arData, true));
+					}
+					else
+					{
+						$return = file_put_contents($path . '.json', $jsonLog);
+					}
 				}
 				else
 				{
