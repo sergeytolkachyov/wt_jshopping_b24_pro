@@ -1,6 +1,6 @@
 <?php
-	require_once (__DIR__.'/settings.php');
-
+defined( '_JEXEC' ) or die;
+define('C_REST_BLOCK_LOG',true);
 	/**
 	 *  @version 1.36
 	 *  define:
