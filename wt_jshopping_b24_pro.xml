@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
-<extension type="plugin" version="3.9" method="upgrade" group="system">
+<extension type="plugin" version="3.10" method="upgrade" group="system">
     <name>System - WT JoomShopping Bitrix24 PRO</name>
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>01/07/2021</creationDate>
+	<creationDate>09/11/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>2.5.3</version>
+    <version>2.6.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
 	<scriptfile>script.php</scriptfile>
     <media folder="media" destination="plg_system_wt_jshopping_b24_pro">
@@ -85,6 +85,19 @@
                     <option value="lead">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_L</option>
                     <option value="deal">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_D</option>
                 </field>
+            <field type="radio"
+				name="b24_trigger_event"
+				label="PLG_WT_JSHOPPING_B24_PRO_B24_TRIGGER_EVENT"
+				description="PLG_WT_JSHOPPING_B24_PRO_B24_TRIGGER_EVENT_DESC"
+				default="always" class="btn-group btn-group-yesno">
+                    <option value="always">PLG_WT_JSHOPPING_B24_PRO_B24_TRIGGER_EVENT_ALWAYS</option>
+                    <option value="successful_payment">PLG_WT_JSHOPPING_B24_PRO_B24_TRIGGER_EVENT_SUCCESSFUL_PAYMENT</option>
+                </field>
+            <field name="b24_trigger_event_desc"
+                   type="note"
+                   description="PLG_WT_JSHOPPING_B24_PRO_B24_TRIGGER_EVENT_DESC"
+                   class="alert alert-info"
+                   showon="b24_trigger_event:successful_payment"/>
                 <field type="radio"
                        name="create_contact_for_unknown_lead"
                        label="PLG_WT_JSHOPPING_B24_PRO_CREATE_CONTACT_FOR_UNKNOWN_LEAD"
@@ -168,6 +181,14 @@
                        name="product_link"
                        label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK"
                        description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK_DESC"
+                       default="1" class="btn-group btn-group-yesno"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="radio"
+                       name="jshopping_link_to_order_in_comment"
+                       label="PLG_WT_JSHOPPING_B24_PRO_JSHOPPING_LINK_TO_ORDER_IN_COMMENT"
                        default="1" class="btn-group btn-group-yesno"
                 >
                     <option value="1">JYES</option>

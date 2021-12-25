@@ -66,5 +66,6 @@
         <option value="ext_field_1">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_1</option>
         <option value="ext_field_2">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_2</option>
         <option value="ext_field_3">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_EXT_FIELD_3</option>
+        <option value="wt_sm_otpravka_pochta_ru_barcode">PLG_WT_JSHOPPING_B24_PRO_WT_SM_OTPRAVKA_POCHTA_RU_BARCODE</option>
     </field>
 </form>
