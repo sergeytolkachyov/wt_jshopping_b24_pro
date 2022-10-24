@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form>
-    <field name="b24fieldtype" type="list"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE">
+    <field name="b24fieldtype"
+           type="list"
+           label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE">
         <option value="standart">PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE_STANDART</option>
         <option value="custom">PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_TYPE_CUSTOM</option>
     </field>
 
-    <field name="b24fieldstandart" type="list"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_STANDART" showon="b24fieldtype:standart">
+    <field name="b24fieldstandart"
+           type="list"
+           label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_STANDART"
+           showon="b24fieldtype:standart">
         <option value="TITLE">PLG_WT_JSHOPPING_B24_PRO_LEAD_TITLE</option>
         <option value="NAME">PLG_WT_JSHOPPING_B24_PRO_LEAD_NAME</option>
         <option value="SECOND_NAME">PLG_WT_JSHOPPING_B24_PRO_LEAD_SECOND_NAME</option>
@@ -26,8 +31,14 @@
         <option value="FAX">PLG_WT_JSHOPPING_B24_PRO_LEAD_FAX</option>
         <option value="COMMENTS">PLG_WT_JSHOPPING_B24_PRO_LEAD_COMMENTS</option>
     </field>
-    <field name="b24fieldcustom"  type="text"  label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_CUSTOM" showon="b24fieldtype:custom"/>
-    <field name="storefield" type="list" multiple="true" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_FIELD">
+    <field name="b24fieldcustom"
+           type="text"
+           label="PLG_WT_JSHOPPING_B24_PRO_LEAD_FIELD_CUSTOM"
+           showon="b24fieldtype:custom"/>
+    <field name="storefield"
+           type="list"
+           multiple="true"
+           label="PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_FIELD">
         <option value="order_number">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_NUMBER</option>
         <option value="user_id">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_USER_ID</option>
         <option value="order_total">PLG_WT_JSHOPPING_B24_PRO_LEAD_JSHOPPING_ORDER_TOTAL</option>
