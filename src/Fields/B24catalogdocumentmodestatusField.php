@@ -11,18 +11,17 @@ namespace Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\Form\Field\SpacerField;
+use Joomla\CMS\Form\Field\NoteField;
 use Joomla\CMS\Form\FormHelper;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use \Joomla\CMS\Language\Text;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
 
 FormHelper::loadFieldClass('spacer');
-class B24CatalogDocumentModeStatusField extends SpacerField
+class B24catalogdocumentmodestatusField extends NoteField
 {
 
-	protected $type = 'B24CatalogDocumentModeStatus';
+	protected $type = 'B24catalogdocumentmodestatus';
 
 	/**
 	 * Method to get the field input markup for a spacer.
@@ -54,36 +53,25 @@ class B24CatalogDocumentModeStatusField extends SpacerField
 
 			if (!empty($crm_host) && !empty($webhook_secret) && !empty($crm_assigned_id))
 			{
-
 				$resultBitrix24 = CRest::call("catalog.document.mode.status", []);
-				$info =  'Для получения статуса складского учета (включен / выключен) нужно создать вебхук с правами администратора.';
-echo '<pre>';
-print_r($resultBitrix24);
-echo '</pre>';
-				if (isset($resultBitrix24["result"]))
+				if($resultBitrix24['result'] == 'Y'){
+					// Включен складской учёт.
+					$info = '</div><div class="alert alert-success py-1 my-0 col-12">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_CATALOG_DOCUMENT_MODE_STATUS_FIELD_Y').'</div><div>';
+
+				} elseif($resultBitrix24['result'] == 'N') {
+					$info = '</div><div class="alert alert-warning py-1 my-0 col-12">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_CATALOG_DOCUMENT_MODE_STATUS_FIELD_N').'</div><div>';
+				} elseif (isset($resultBitrix24['error']))
 				{
-
-					$info = '<div class="webhook-info row">
-                        <div class="col-1 overflow-hidden img-thumbnail" style="background: url(\'' . $resultBitrix24["result"]["PERSONAL_PHOTO"] . '\') no-repeat center; background-size:cover"></div>
-                        <div class="col-11">
-	                        <p><strong>Assigned:</strong> ' . $resultBitrix24["result"]["NAME"] . ' ' . $resultBitrix24["result"]["LAST_NAME"] . ' 
-	                        <strong>Assigned ID:</strong> ' . $resultBitrix24["result"]["ID"] . ' <strong>Is admin:</strong> ' . $is_admin . '</p>
-						</div>
-
-                    </div>';
-
+					$info = '</div><div class="alert alert-danger my-0 col-12"><strong>Bitrix 24 Error</strong> <p>' . $resultBitrix24['error'] . '</p><p>' . $resultBitrix24['error_description'] . '</p></div><div>';
 				}
-				elseif (isset($resultBitrix24['error']))
-				{
-					$info = '</div><div class="webhook-info col-12"><strong>Bitrix 24 Error</strong> <p>' . $resultBitrix24['error'] . '</p><p>' . $resultBitrix24['error_description'] . '</p></div><div>';
-				}
+
 			}
 		}
 		else
 		{
 			$info = '';
 		}
-//		$info = "123";
+
 
 		return $info;
 	}

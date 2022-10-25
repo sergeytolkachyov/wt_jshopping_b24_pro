@@ -6,6 +6,7 @@ use Joomla\CMS\Installer\Installer;
 use Joomla\CMS\Installer\InstallerHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Version;
 
 /**
  * Script file of HelloWorld component.
@@ -80,7 +81,16 @@ class plgSystemWt_jshopping_b24_proInstallerScript
      */
     public function preflight($type, $installer) 
     {
+	    $version = new Version;
 
+	    // only for Joomla 3.x
+
+	    if (version_compare($version->getShortVersion(), '4.0', '<')) {
+
+		    Factory::getApplication()->enqueueMessage('&#128546; <strong>WT JShopping Bitrix 24 PRO</strong> plugin doesn\'t support Joomla versions <span class="alert-link">lower 4</span>. Your Joomla version is <span class="badge badge-important">'.$version->getShortVersion().'</span>','error');
+		    return false;
+
+	    }
     }
 	
 

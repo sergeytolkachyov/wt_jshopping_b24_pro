@@ -4,10 +4,10 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>24/10/2021</creationDate>
+	<creationDate>25/10/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>3.0.0-beta</version>
+    <version>3.0.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <namespace path="src">Joomla\Plugin\System\Wt_jshopping_b24_pro</namespace>
 	<scriptfile>script.php</scriptfile>
@@ -182,15 +182,20 @@
                 </field>
                 <field type="note"
                        name="b24_product_type_for_product_rows_alert"
-                       label="Обратите внимание!"
                        description="PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_ALERT"
                        class="alert alert-danger"
                        showon="b24_product_type_for_product_rows:product"/>
 
                 <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
+                       type="b24catalogdocumentmodestatus"
+                       name="b24_catalog_document_mode_status"
+                       label="Складской учёт включен в Битрикс 24?"
+                       showon="b24_product_type_for_product_rows:product"/>
+
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
                        type="B24StoreList"
                        name="default_bitrix24_store_iblock_id"
-                       label="Склад Битрикс 24"
+                       label="PLG_WT_JSHOPPING_B24_PRO_DEFAULT_BITRIX24_STORE_IBLOCK_ID"
                        showon="b24_product_type_for_product_rows:product"/>
                 <field type="radio"
                        name="product_link"
@@ -269,6 +274,11 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
+                <field type="note"
+                       name="bitrix24_inbound_update_jshopping_products_prices_alert"
+                       description="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_PRICES_ALERT"
+                       class="alert alert-info"
+                       showon="bitrix24_inbound_integration:1[AND]bitrix24_inbound_update_jshopping_products_prices:1"/>
                 <field type="radio"
                        name="bitrix24_inbound_update_jshopping_products_quantities"
                        label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_QUANTITIES"
@@ -279,11 +289,7 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field type="note"
-                       name="bitrix24_inbound_update_jshopping_products_prices_alert"
-                       description="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_PRICES_ALERT"
-                       class="alert alert-info"
-                       showon="bitrix24_inbound_integration:1[AND]bitrix24_inbound_update_jshopping_products_prices:1"/>
+
                 <field type="radio"
                        name="bitrix24_inbound_update_jshopping_order_statuses"
                        label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_ORDER_STATUSES"
