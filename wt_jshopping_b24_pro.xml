@@ -1,26 +1,25 @@
 <?xml version="1.0"?>
-<extension type="plugin" version="3.10" method="upgrade" group="system">
+<extension type="plugin" method="upgrade" group="system">
     <name>System - WT JoomShopping Bitrix24 PRO</name>
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>09/11/2021</creationDate>
+	<creationDate>25/10/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>2.6.0</version>
+    <version>3.0.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
+    <namespace path="src">Joomla\Plugin\System\Wt_jshopping_b24_pro</namespace>
 	<scriptfile>script.php</scriptfile>
     <media folder="media" destination="plg_system_wt_jshopping_b24_pro">
 		<folder>js</folder>
 	</media>
 	<files>
-        <filename plugin="wt_jshopping_b24_pro">wt_jshopping_b24_pro.php</filename>
-        <folder>img</folder>
+        <folder plugin="wt_jshopping_b24_pro">src</folder>
+        <folder>services</folder>
         <folder>language</folder>
-        <folder>lib</folder>
         <folder>subform</folder>
-        <folder>fields</folder>
-		<folder>sql</folder>
+        <folder>sql</folder>
     </files>
 	<languages folder="language" client="administrator">
         <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.ini</language>
@@ -46,23 +45,23 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="plugininfo" name="plugininfo"/>
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="plugininfo" name="plugininfo"/>
                 <field type="text" name="crm_host"
-					label="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST" 
-					default="domain.bitrix24.ru" 
+					label="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST"
+					default="domain.bitrix24.ru"
 					description="PLG_WT_JSHOPPING_B24_PRO_CRM_HOST_DESC" />
 
 				<field type="password"
-					name="crm_webhook_secret" 
-					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_SECRET_CODE" 
-					default="" 
+					name="crm_webhook_secret"
+					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_SECRET_CODE"
+					default=""
 					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_SECRET_CODE_DESC"
                  />
-                <field type="text" 
-					name="crm_assigned" 
-					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID" 
-					default="1" 
-					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID_DESC" 
+                <field type="text"
+					name="crm_assigned"
+					label="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID"
+					default="1"
+					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_ID_DESC"
 					/>
                 <field type="text"
 					name="assigned_by_id"
@@ -70,17 +69,16 @@
 					description="PLG_WT_JSHOPPING_B24_PRO_WEBHOOK_ASSIGNED_BY_ID_DESC"
 					/>
                 <field type="text"
-					name="order_name_prefix" 
-					label="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX" 
-					description="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX_DESC" />
+					name="order_name_prefix"
+					label="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX"
+					description="PLG_WT_JSHOPPING_B24_PRO_ORDER_NAME_PREFIX_DESC"/>
 
-            <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PLUGIN_BEHAVIOR"/>
-            <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_AND_DEAL_INFO"/>
+            <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_PLUGIN_BEHAVIOR" description="PLG_WT_JSHOPPING_B24_PRO_LEAD_AND_DEAL_INFO" class="alert alert-info"/>
 
 			<field type="radio"
 				name="lead_vs_deal"
-				label="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL" 
-				description="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_DESC" 
+				label="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL"
+				description="PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_DESC"
 				default="lead" class="btn-group btn-group-yesno">
                     <option value="lead">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_L</option>
                     <option value="deal">PLG_WT_JSHOPPING_B24_PRO_LEAD_VS_DEAL_D</option>
@@ -116,14 +114,14 @@
                     <option value="0">JNO</option>
                 </field>
 
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24leadstatus"  name="lead_status" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_STATUS" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:lead">
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="b24leadstatus"  name="lead_status" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_STATUS" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:lead">
                     <option value=""/>
                 </field>
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24ldealcategory"  name="deal_category" label="PLG_WT_JSHOPPING_B24_PRO_DEAL_CATEGORY" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:deal">
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="b24ldealcategory"  name="deal_category" label="PLG_WT_JSHOPPING_B24_PRO_DEAL_CATEGORY" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:deal">
                     <option value=""/>
                 </field>
 
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24ldealstage"  name="deal_stage" label="PLG_WT_JSHOPPING_B24_PRO_DEAL_STAGE" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:deal">
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="b24ldealstage"  name="deal_stage" label="PLG_WT_JSHOPPING_B24_PRO_DEAL_STAGE" showon="create_lead_or_deal_on_specified_stage:1[AND]lead_vs_deal:deal">
                     <option value=""/>
                 </field>
 
@@ -137,12 +135,7 @@
                     <option value="SERVICES">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_SERVICES</option>
                     <option value="SERVICE">PLG_WT_JSHOPPING_B24_PRO_DEAL_TYPE_SERVICE</option>
                 </field>
-
-			<field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_UTM"/>
-            <field type="radio" name="load_jquery_coockie_script" label="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE" description="PLG_WT_JSHOPPING_B24_PRO_LOAD_JQUERY_COOCKIE_DESC" default="1" class="btn-group btn-group-yesno">
-                    <option value="1">JYES</option>
-                    <option value="0">JNO</option>
-                </field>
+            <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_UTM_HEADER" description="PLG_WT_JSHOPPING_B24_PRO_UTM" class="alert alert-info"/>
                 <field type="radio"
                        name="debug"
                        label="PLG_WT_JSHOPPING_B24_PRO_DEBUG"
@@ -152,8 +145,7 @@
                     <option value="0">JNO</option>
                 </field>
             </fieldset>
-            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_LEAD_SETTINGS">
-                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM_DESC"/>
+            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_LEAD_SETTINGS" description="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM_DESC">
                 <field name="fields"
                        label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM"
                        type="subform"
@@ -161,6 +153,7 @@
                        formsource="/plugins/system/wt_jshopping_b24_pro/subform/fields.xml"
                        multiple="true"
                        buttons="add,remove"
+                       parentclass="stack"
                 />
 
                 <field type="radio"
@@ -175,8 +168,35 @@
 				
             </fieldset>
             <fieldset name="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
-                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS"/>
-                <field type="spacer" label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT"/>
+                <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS_HEADER" description="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS" class="alert alert-info"/>
+                <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT_HEADER" description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT" class="alert alert-warning"/>
+
+                <field type="radio"
+                       name="b24_product_type_for_product_rows"
+                       label="PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_LABEL"
+                       description="PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_DESC"
+                       default="commodity_items" class="btn-group"
+                >
+                    <option value="product">PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_PRODUCT</option>
+                    <option value="commodity_items">PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_COMMODITY_ITEMS</option>
+                </field>
+                <field type="note"
+                       name="b24_product_type_for_product_rows_alert"
+                       description="PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_TYPE_FOR_PRODUCT_ROWS_ALERT"
+                       class="alert alert-danger"
+                       showon="b24_product_type_for_product_rows:product"/>
+
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
+                       type="b24catalogdocumentmodestatus"
+                       name="b24_catalog_document_mode_status"
+                       label="Складской учёт включен в Битрикс 24?"
+                       showon="b24_product_type_for_product_rows:product"/>
+
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
+                       type="B24StoreList"
+                       name="default_bitrix24_store_iblock_id"
+                       label="PLG_WT_JSHOPPING_B24_PRO_DEFAULT_BITRIX24_STORE_IBLOCK_ID"
+                       showon="b24_product_type_for_product_rows:product"/>
                 <field type="radio"
                        name="product_link"
                        label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK"
@@ -232,7 +252,7 @@
                 </field>
             </fieldset>
             <fieldset name="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="3dpartyintegrations" name="3dpartyintegrations"/>
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="thirdpartyintegrations" name="thirdpartyintegrations"/>
             </fieldset>
             <fieldset name="Inbound_Bitrix24">
                 <!-- Входящая интеграция с Битрикс 24-->
@@ -243,8 +263,33 @@
                     <option value="1">JYES</option>
                     <option value="0">JNO</option>
                 </field>
-                <field addfieldpath="plugins/system/wt_jshopping_b24_pro/fields" type="b24outgoinghandlerurl" showon="bitrix24_inbound_integration:1"/>
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="b24outgoinghandlerurl" showon="bitrix24_inbound_integration:1"/>
                 <field type="password" name="bitrix24_application_token" label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_APPLICATION_TOKEN" showon="bitrix24_inbound_integration:1"/>
+                <field type="radio"
+                       name="bitrix24_inbound_update_jshopping_products_prices"
+                       label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_PRICES"
+                       class="btn-group btn-group-yesno"
+                       default="0"
+                       showon="bitrix24_inbound_integration:1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="note"
+                       name="bitrix24_inbound_update_jshopping_products_prices_alert"
+                       description="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_PRICES_ALERT"
+                       class="alert alert-info"
+                       showon="bitrix24_inbound_integration:1[AND]bitrix24_inbound_update_jshopping_products_prices:1"/>
+                <field type="radio"
+                       name="bitrix24_inbound_update_jshopping_products_quantities"
+                       label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_QUANTITIES"
+                       description="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_PRODUCTS_QUANTITIES_DESC"
+                       class="btn-group btn-group-yesno"
+                       default="0"
+                       showon="bitrix24_inbound_integration:1">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+
                 <field type="radio"
                        name="bitrix24_inbound_update_jshopping_order_statuses"
                        label="PLG_WT_JSHOPPING_B24_PRO_BITRIX24_INBOUND_UPDATE_JSHOPPING_ORDER_STATUSES"
@@ -268,6 +313,6 @@
         </fields>
     </config>
     <updateservers>
-        <server type="extension" name="WebTolkUpdateServer"><![CDATA[	https://web-tolk.ru/component/swjprojects/jupdate.html?element=wt_jshopping_b24_pro ]]></server>
+        <server type="extension" name="Web Tolk Update Server - JoomShopping Bitrix 24">https://web-tolk.ru/component/swjprojects/jupdate.html?element=wt_jshopping_b24_pro</server>
     </updateservers>
 </extension>
