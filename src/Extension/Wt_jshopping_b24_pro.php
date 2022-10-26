@@ -757,7 +757,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 * @return true boolean If Requisites added successfully
 	 */
 
-	/** Returns country name by id
+	/**
+	 * Returns country name by id
 	 *
 	 * @param   Int  $country_id
 	 *
@@ -780,13 +781,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		return $country_name["name_" . $current_lang];
 	}
 
-	/*
-	 * function for to add Bitrix24 contact by contact id
-	 * @param $contact_id string contact id found by findDoubles
-	 * @param $upd_info array phone or email array to add to existing contact
-	 * @param $debug string to enable debug data from function
-	 * @since version 2.0.0-beta1
-	 */
+
 
 	/** Returns coupon code by id
 	 *
@@ -809,13 +804,14 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		return $coupon_code["coupon_code"];
 	}
 
-	/** Returns shipping method name by id
+	/**
+	 * Returns shipping method name by id
 	 *
 	 * @param   Int  $shipping_method_id
 	 *
 	 * @return string
 	 *
-	 * @since version 1.0
+	 * @since 1.0.0
 	 */
 
 	private function getShippingMethodName($shipping_method_id)
@@ -1029,7 +1025,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 */
 	private function addDeal($qr, $product_rows, $debug, $order_id)
 	{
-		$arData         = [
+		$arData = [
 			'add_deal'     => [
 				'method' => 'crm.deal.add',
 				'params' => $qr
@@ -1364,9 +1360,9 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	public function onAjaxWt_jshopping_b24_pro()
 	{
 		$app           = Factory::getApplication();
-		$token         = $app->input->get->get("token", "", "raw");
-		$action        = $app->input->get->get("action", "", "raw");
-		$b24_auth_data = $app->input->post->get("auth");
+		$token         = $app->getInput()->get->get("token", "", "raw");
+		$action        = $app->getInput()->get->get("action", "", "raw");
+		$b24_auth_data = $app->getInput()->post->get("auth");
 		if ($b24_auth_data)
 		{
 			$b24_app_token = $b24_auth_data["application_token"];
@@ -1378,8 +1374,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		// Проверка токена приложения из Битрикс24
 		if ($this->params->get('bitrix24_inbound_integration') == 1 && $token == md5(Uri::root()) && $b24_app_token === $this->params->get("bitrix24_application_token"))
 		{
-			$b24_event = $app->input->post->get("event");
-			$b24_data  = $app->input->post->get("data");
+			$b24_event = $app->getInput()->post->get("event");
+			$b24_data  = $app->getInput()->post->get("data");
 			if ($b24_event == "ONCRMLEADUPDATE")
 			{
 				/**
@@ -1431,11 +1427,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 						$db    = Factory::getContainer()->get('DatabaseDriver');
 						$query = $db->getQuery(true);
 						$query->update($db->quoteName('#__jshopping_products'));
-						if(isset($b24_product_data['product_price'])){
+						if (isset($b24_product_data['product_price']))
+						{
 							$query->set($db->quoteName("product_price") . " = " . floatval($b24_product_data['product_price']));
 						}
 
-						if(isset($b24_product_data['product_quantity'])){
+						if (isset($b24_product_data['product_quantity']))
+						{
 							$query->set($db->quoteName("product_quantity") . " = " . floatval($b24_product_data['product_quantity']));
 						}
 
@@ -1466,7 +1464,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	/**
 	 *    Function to get lead info from Bitrix24
 	 *
-	 * @param   string    lead id in Bitrix 24
+	 * @param   string  $lead_id  lead id in Bitrix 24
 	 *
 	 * @return    object    lead info object
 	 * @since    2.5.0
@@ -1513,6 +1511,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	/**
 	 * Get product price and product quantity form Bitrix 24 by product id
+	 *
 	 * @param $b24_product_id string|int Bitrix 24 product id
 	 *
 	 * @return array Bitrix24 product price and product quantity array
@@ -1524,8 +1523,9 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		{
 
 			$resultBitrix24 = [];
-			if($this->params->get('bitrix24_inbound_update_jshopping_products_prices') == 1){
-				$resultBitrix24ProductPrice = CRest::call("catalog.price.list", [
+			if ($this->params->get('bitrix24_inbound_update_jshopping_products_prices') == 1)
+			{
+				$resultBitrix24ProductPrice      = CRest::call("catalog.price.list", [
 					'select' => [
 						'price'
 					],
@@ -1536,13 +1536,14 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				$resultBitrix24['product_price'] = $resultBitrix24ProductPrice['result']['prices'][0]['price'];
 			}
 
-			if($this->params->get('bitrix24_inbound_update_jshopping_products_quantities') == 1){
-				$resultBitrix24ProductQuantity = CRest::call("catalog.product.list", [
+			if ($this->params->get('bitrix24_inbound_update_jshopping_products_quantities') == 1)
+			{
+				$resultBitrix24ProductQuantity      = CRest::call("catalog.product.list", [
 					'select' => [
-						'id','iblockId','name','detailPicture','price','quantity','xmlId'
+						'id', 'iblockId', 'name', 'detailPicture', 'price', 'quantity', 'xmlId'
 					],
 					'filter' => [
-						'id' => $b24_product_id, // Фильтр по id Товара
+						'id'       => $b24_product_id, // Фильтр по id Товара
 						'iblockId' => $this->params->get('default_bitrix24_store_iblock_id')
 					]
 				]);
@@ -1659,9 +1660,17 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 						<span style="color:#0fa2e6">W</span>
 							<span style="color:#384148">T</span>
 					 </span>
-				Bitrix 24
-				</a>
-			  </li>';
+				Bitrix 24';
+
+		if($this->params->get('bitrix24_inbound_integration',0) == 1 &&
+			$this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1 ||
+			$this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1
+
+		){
+			echo '<span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger"><span class="visually-hidden">pay attantion</span></span>';
+		}
+
+			  echo '</a></li>';
 	}
 
 	/**
@@ -1678,19 +1687,6 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	public function onDisplayProductEditTabsEnd(&$pane, &$row, &$lists, &$tax_value, &$currency)
 	{
 
-//		$model_langs = \JSFactory::getModel("languages");
-//		$languages   = $model_langs->getAllLanguages(1);
-//		$addon       = \JSFactory::getTable('addon');
-//		$addon->loadAlias('wt_jshopping_custom_fields');
-//		$addon_params = (object) $addon->getParams();
-//		if (empty($addon_params->wt_jshopping_custom_fields_products))
-//		{
-//			return;
-//		}
-//
-
-
-//		$resultBitrix24 = CRest::call('crm.product.list',[]); // В ответе есть PRICE
 		echo '<div id="product_wt_jshopping_b24_pro" class="tab-pane">';
 		echo '<div class="main-card p-3">';
 		echo '
@@ -1710,8 +1706,25 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 								<h4>WT JoomShopping Bitrix 24 PRO</h4>
 								<p>' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_DESC') . '</p>
 					</div>
-
 				</div>';
+
+		if($this->params->get('bitrix24_inbound_integration',0) == 1 &&
+				$this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1 ||
+				$this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1
+
+		  ){
+			 $message = '<div class="alert alert-warning">';
+					if($this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1){
+						$message .= '<p><span class="text-danger fw-bold">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_PRICE_UPDATE_ALERT').'</span></p>';
+					}
+					if($this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1){
+						$message .= '<p><span class="text-danger fw-bold">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_QUANTITY_UPDATE_ALERT').'</span></p>';
+					}
+			$message .= Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_UPDATE_ALERT');
+			$message .= '</div>';
+			echo $message;
+		}
+
 
 		$form_data = new SimpleXMLElement('<?xml version="1.0" encoding="UTF-8"?><form></form>');
 		$fieldset  = $form_data->addChild('fieldset');
@@ -1871,63 +1884,18 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	{
 		$product_pagination_start = Factory::getApplication()->getInput()->get('start', 0);
 
-				$resultBitrix24 = CRest::call("catalog.product.list", [
-					'select' => [
-							'id','iblockId','name','detailPicture','price','quantity','xmlId'
-						],
-					'filter' => [
+		$resultBitrix24 = CRest::call("catalog.product.list", [
+			'select' => [
+				'id', 'iblockId', 'name', 'detailPicture', 'price', 'quantity', 'xmlId'
+			],
+			'filter' => [
 //						'id' => 122, // Фильтр по id Товара
-						'iblockId' => $this->params->get('default_bitrix24_store_iblock_id')
-					],
+				'iblockId' => $this->params->get('default_bitrix24_store_iblock_id')
+			],
 //					'order' => ['id' =>'DESC' ],
-					'start' => $product_pagination_start
-				]);
+			'start'  => $product_pagination_start
+		]);
 
-//		$html   = [];
-//		$html[] = '<html>';
-//		$html[] = '<head><meta charset="utf-8"/>
-//							<title>Bitrix 24 products</title>
-//							<link href="' . Uri::root() . 'media/vendor/bootstrap/css/bootstrap.css" rel="stylesheet"/>
-//							<style>.row-hover:hover {background-color: #eee;}</style>
-//							<script src="' . Uri::root() . 'media/system/js/core.js"></script>
-//							<script src="' . Uri::root() . 'media/plg_system_wt_jshopping_b24_pro/js/B24crmproductsField.js"></script>
-//							</head><body>';
-//		if (isset($resultBitrix24['error']))
-//		{
-//			$html[] = '<div class="alert alert-danger"><h3>Error: ' . $resultBitrix24['error'] . '</h3><p>' . $resultBitrix24['error_description'] . '</p></div>';
-//		}
-//		else
-//		{
-//			$html[] = '<div class="container-fluid mb-5">';
-//			foreach ($resultBitrix24['result'] as $b24_product)
-//			{
-//				$html[] = '<div class="row border border-1 row-hover">';
-//				$html[] = '<div class="col-2">' . HTMLHelper::image($b24_product['PREVIEW_PICTURE'], $b24_product['NAME'], ['class' => 'img-fluid']) . '</div>';
-//				$html[] = '<div class="col-8 py-3"><a href="#">' . $b24_product["NAME"] . '</a></div>';
-//				$html[] = '<div class="col-2 py-3"><button class="btn btn-primary" type="button" data-b24-product-id="' . $b24_product["ID"] . '">Выбрать</button></div>';
-//				$html[] = '</div>';//col-12
-//			}
-//			$html[] = '</div>';
-//			$html[] = '<nav aria-label="Page navigation example" class="fixed-bottom bg-white px-2 border border-top">
-//				<div class="btn-group">';
-//
-//			$products_on_page = (int) count($resultBitrix24['result']);
-//			$pages            = ceil((int) $resultBitrix24['total'] / $products_on_page);
-//			$b24_product_list_start = 0;
-//			for ($i = 1; $i <= $pages; $i++)
-//			{
-//				$html[] = '<button class="btn" type="button" data-b24-product-list-start="'.$b24_product_list_start.'">' . $i . '</button>';
-//				$b24_product_list_start = $b24_product_list_start + 50;
-//			}
-//
-//			$html[] = '</div></nav>';
-//			$html[] = '</div>';
-//		}
-//
-//		$html[] = '<pre>'.print_r($resultBitrix24,true).'</pre>';
-//		$html[] = '</body></html>';
-
-//		return implode('', $html);
 		return $resultBitrix24;
 
 
