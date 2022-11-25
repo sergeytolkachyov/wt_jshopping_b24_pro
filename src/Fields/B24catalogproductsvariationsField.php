@@ -128,6 +128,7 @@ class B24catalogproductsvariationsField extends FormField
 //				print_r($resultBitrix24);
 //				echo '</pre>';
 
+				var_dump($this->element['id']);
 $html = '<div class="input-group">
 
     	    <input type="text" 
@@ -137,8 +138,11 @@ $html = '<div class="input-group">
     	    '.(($this->__get('required') == true) ? 'required="'.$this->__get('required').'"' : '').'" 
     	    value="'.($this->__get('value') ? $this->__get('value') : '').'"/>
 
-           <button type="button" class="btn btn-success button-select" data-bs-toggle="modal" 
-           data-field-bitrix24-products data-bs-target="#bitrix24_products_field_' . $this->__get('id').'">'. Text::_('JLIB_FORM_BUTTON_SELECT').'</button>
+           <button type="button" 
+                class="btn btn-success button-select" 
+                data-bs-toggle="modal" 
+                data-field-bitrix24-products 
+                data-bs-target="#bitrix24_products_field_' . $this->__get('id').'">'. Text::_('JLIB_FORM_BUTTON_SELECT').'</button>
 	    </div>
 	    
 	    <script>
@@ -156,7 +160,7 @@ $html = '<div class="input-group">
 				$url = Uri::root()."index.php?option=com_ajax&plugin=wt_jshopping_b24_pro&group=system&action=getBitrix24ProductsVariations&format=raw";
 				$modalHTML = HTMLHelper::_(
 					'bootstrap.renderModal',
-					'bitrix24_products_field_' . $this->__get('id') ,
+					'bitrix24_products_field_' . $this->__get('id'),
 					[
 //						'url'         => $url,
 						'title'       => Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_LIST_FIELD_MODAL_HEADER'),
@@ -171,8 +175,8 @@ $html = '<div class="input-group">
 					'<table class="table table-hover table-striped" id="bitrix24_products_field_' . $this->__get('id').'_product_table">
 						  <thead>
 						    <tr>
-						      <td>Название</td>
-						      <td>Кнопка</td>
+						      <th>Название</th>
+						      <th>Кнопка</th>
 						    </tr>
 						  </thead>
 						  <tbody>

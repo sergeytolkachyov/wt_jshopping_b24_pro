@@ -13,6 +13,7 @@
 	<scriptfile>script.php</scriptfile>
     <media folder="media" destination="plg_system_wt_jshopping_b24_pro">
 		<folder>js</folder>
+		<folder>images</folder>
 	</media>
 	<files>
         <folder plugin="wt_jshopping_b24_pro">src</folder>

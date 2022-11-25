@@ -1,17 +1,23 @@
 document.addEventListener('DOMContentLoaded', function () {
 	let wt_jshopping_b24_pro_options = Joomla.getOptions('wt_jshopping_b24_pro');
-	const b24_product_list_modal = document.getElementById("bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id);
-	b24_product_list_modal.addEventListener('shown.bs.modal', event => {
+	const b24_product_variations_list_modal = document.getElementById("bitrix24_products_variations_modal");
+	b24_product_variations_list_modal.addEventListener('shown.bs.modal', event => {
+		window.jshop_product_id = event.relatedTarget.getAttribute('data-product-id');
+		window.jshop_product_attr_id = event.relatedTarget.getAttribute('data-product-attr-id');
 		let start = 0;
-		getBitrix24ProductList(start);
+		getBitrix24ProductVariationsList(start,wt_jshopping_b24_pro_options.product_parent_id_for_b24);
 	})
 
 
 	function bindB24ProductButtons() {
-		let b24_product_buttons = document.querySelectorAll('[data-b24-product-id]');
-		b24_product_buttons.forEach(function (button, index, array) {
+		// кнопки из <template>
+		let b24_product_variations_buttons = document.querySelectorAll('[data-b24-product-variation-select-btn]');
+		b24_product_variations_buttons.forEach(function (button, index, array) {
 			button.addEventListener('click', function (event) {
-				fillB24ProductIdField(button.getAttribute('data-b24-product-id'));
+				/**
+				 * В атрибуты кнопок в <template> добавить jshop_product_id,jshop_product_attr_id
+				 */
+				fillB24ProductVariationIdField(window.jshop_product_id,window.jshop_product_attr_id, button.getAttribute('data-b24-product-variation-select-btn'));
 				window.Joomla.Modal.getCurrent().close();
 			})
 
@@ -23,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			button.addEventListener('click', function (event) {
 
 				let start = button.getAttribute('data-b24-product-list-start');
-				getBitrix24ProductList(start);
+				getBitrix24ProductVariationsList(start);
 
 
 			})
@@ -32,30 +38,29 @@ document.addEventListener('DOMContentLoaded', function () {
 
 	}
 
-	function fillB24ProductIdField(b24ProductId) {
+	function fillB24ProductVariationIdField(jshop_product_id,jshop_product_attr_id,b24ProductVariationId) {
 		let wt_jshopping_b24_pro_options = Joomla.getOptions('wt_jshopping_b24_pro');
-		let b24_product_id_input_field = document.getElementById(wt_jshopping_b24_pro_options.modal_id);
-		console.log("b24ProductId.b24ProductId = " + b24ProductId);
-		b24_product_id_input_field.value = b24ProductId;
+		let b24_product_variation_id_input_field = document.getElementById("b24-product-variation-"+jshop_product_id+"-"+jshop_product_attr_id);
+		b24_product_variation_id_input_field.value = b24ProductVariationId;
 	}
 
-	function getBitrix24ProductList(start) {
+	function getBitrix24ProductVariationsList(start,product_parent_id_for_b24) {
 		start = parseInt(start);
 		Joomla.request({
-			url: 'index.php?option=com_ajax&plugin=wt_jshopping_b24_pro&group=system&action=getBitrix24Products&format=json&start=' + start,
+			url: 'index.php?option=com_ajax&plugin=wt_jshopping_b24_pro&group=system&action=getBitrix24ProductsVariations&format=json&b24_parent_product_id='+product_parent_id_for_b24+'&start=' + start,
 			onSuccess: function (response, xhr) {
 				// Тут делаем что-то с результатами
 				// Проверяем пришли ли ответы
 				if (response !== '') {
 
 					let result = JSON.parse(response);
-					console.group('WT JSHopping Bitrix 24 PRO');
+					console.group('WT JSHopping Bitrix 24 PRO - product variations');
 					console.log(result);
 					console.groupEnd();
 					if (result.success === true) {
 
 						if (result.data[0].error_description) {
-							var modal_body = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + " .modal-body");
+							var modal_body = document.querySelector("#bitrix24_products_variations_modal .modal-body");
 							modal_body.innerHTML = '<div class="alert alert-danger"><h4>' + result.data[0].error + '</h4><p>' + result.data[0].error_description + '</p></div>';
 							return false;
 						}
@@ -65,9 +70,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 							// Находим элемент tbody таблицы
 							// и шаблон строки
-							var tbody = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + "_product_table tbody");
+							var tbody = document.querySelector("#bitrix24_products_variations_modal_product_table tbody");
 							tbody.innerHTML = '';
-							var template = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + "_productrow");
+							var template = document.querySelector("#bitrix24_products_variations_modal_productrow");
 
 							result.data[0].result.products.forEach(function (item, index, array) {
 								// Клонируем новую строку и вставляем её в таблицу
@@ -75,7 +80,7 @@ document.addEventListener('DOMContentLoaded', function () {
 								var td = clone.querySelectorAll("td");
 								// td[0].innerHTML = "<img src='" + item.PREVIEW_PICTURE + "' width='64px'>";
 								td[0].innerHTML = item.name + " (ID: " + item.id + ")";
-								td[1].innerHTML = "<button type='button' class='btn btn-primary btn-sm' data-b24-product-id='" + item.id + "'>Выбрать</button>";
+								td[1].innerHTML = "<button type='button' class='btn btn-primary btn-sm' data-b24-product-variation-select-btn='" + item.id + "'>Выбрать</button>";
 
 								tbody.appendChild(clone);
 							});
@@ -83,7 +88,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 							// // Клонируем новую строку ещё раз и вставляем её в таблицу
 
-							var pagination_container = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + "_product_pagination");
+							var pagination_container = document.querySelector("#bitrix24_products_variations_modal_product_pagination");
 
 							// var template_pagination_button = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + "_product_pagination");
 							let b24_pagination_buttons = Math.ceil(parseInt(result.data[0].total) / 50);
@@ -113,5 +118,5 @@ document.addEventListener('DOMContentLoaded', function () {
 			}
 		});
 
-	}// getBitrix24ProductList END
+	}// getBitrix24ProductVariationsList END
 });
