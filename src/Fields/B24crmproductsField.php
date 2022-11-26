@@ -111,8 +111,8 @@ class B24crmproductsField extends FormField
 					'<table class="table table-hover table-striped" id="bitrix24_products_field_' . $this->__get('id') . '_product_table">
 						  <thead>
 						    <tr>
-						      <td>Название</td>
-						      <td>Кнопка</td>
+						      <td>' . Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_LIST_FIELD_MODAL_TABLE_HEAD_NAME') . '</td>
+						      <td></td>
 						    </tr>
 						  </thead>
 						  <tbody>

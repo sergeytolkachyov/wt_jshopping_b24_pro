@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     3.0.0
+ * @version     3.1.0
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,9 +13,7 @@ namespace Joomla\Plugin\System\Wt_jshopping_b24_pro\Extension;
 defined('_JEXEC') or die;
 
 use Joomla\Application\SessionAwareWebApplicationInterface;
-use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Form\Form;
-use Joomla\CMS\Form\FormFactoryInterface;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -24,7 +22,6 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
-use NRFramework\Conditions\Conditions\PHP;
 use SimpleXMLElement;
 
 class Wt_jshopping_b24_pro extends CMSPlugin
@@ -310,7 +307,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}
 
-			/*
+			/**
 			 * Если Сделка или Лид+Контакт
 			 */
 
@@ -346,7 +343,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 
 			}// end if deal or lead+contact
-			/*
+			/**
 			* Если простой Лид
 			*/
 			else
@@ -360,7 +357,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$qr["fields"]["SOURCE_ID"]          = $this->params->get('lead_source');
 		$qr["fields"]["SOURCE_DESCRIPTION"] = $this->params->get('source_description');
 
-		/*
+		/**
 		 * Тип сделки: продажа, продажа товара, продажа услуги и т.д.
 		 */
 
@@ -471,7 +468,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$this->checkUtms($qr);
 
 
-		/*
+		/**
 		 * Добавление лида или сделки на определенную стадию (с определенным статусом)
 		 */
 
@@ -497,7 +494,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 		if ($plugin_mode == "deal" || ($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1))
 		{
-			/*
+			/**
 			 * Ищем дубли контактов
 			 *
 			 */
@@ -530,7 +527,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 
 
-			/*
+			/**
 			 * Конец поиска дублей контактов
 			 *
 			 * Начинаем разбор.
@@ -600,7 +597,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 
 
-			/*
+			/**
 			 *  Найдены совпадения И по email И по телефону
 			 */
 			if (!is_null($b24contact_id_by_email) && !is_null($b24contact_id_by_phone))
@@ -614,7 +611,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 				else
 				{
-					/*
+					/**
 					 * Если CONTACT_ID разные - пишем все в комментарий к сделке/лиду.
 					 */
 
@@ -624,7 +621,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}// END Найдены совпадения И по email И по телефону
 
-			/*
+			/**
 			 *  У контакта совпал телефон, но не совпал email
 			 */
 			elseif (!is_null($b24contact_id_by_phone) && is_null($b24contact_id_by_email))
@@ -653,7 +650,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}// END У контакта совпал телефон, но не совпал email
 
-			/*
+			/**
 			 *  У контакта совпал email, но не совпал телефон
 			 */
 			elseif (!is_null($b24contact_id_by_email) && is_null($b24contact_id_by_phone))
@@ -682,7 +679,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 			}// END У контакта совпал email, но не совпал телефон
 
-			/*
+			/**
 			 *  Нет совпадений с контактами. Создаем новый контакт.
 			 */
 			elseif (is_null($b24contact_id_by_email) && is_null($b24contact_id_by_phone))
@@ -696,19 +693,19 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				else
 				{
 					$addRaddRequisitesResult = $this->addRequisites($b24contact_id, $requisites, $debug);
-					/*
+					/**
 					 * Если ошибка добавления реквизитов
 					 */
 					if ($addRaddRequisitesResult == false)
 					{
-						/*
+						/**
 						 * Пишем реквизиты в комментарий
 						 */
 						$qr["fields"]["COMMENTS"] .= $this->prepareDataToSaveToComment($requisites, Text::_('PLG_WT_JSHOPPING_B24_PRO_ALERT_MESSAGE_6'));
 					}
 					else
 					{
-						/*
+						/**
 						 * Добавляем к лиду/сделке CONTACT_ID
 						 */
 						$qr["fields"]["CONTACT_ID"] = $b24contact_id;
@@ -729,14 +726,14 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 			if ($plugin_mode == "deal")
 			{
-				/*
+				/**
 				 * Добавляем сделку
 				 */
 				$b24result = $this->addDeal($qr, $product_rows, $debug, $order->order_id);
 			}
 			elseif ($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1)
 			{
-				/*
+				/**
 				 * Добавляем лид
 				 */
 				$b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
@@ -757,15 +754,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	}
 
-	/*
-	 * function for to add Requisites to Contact in Bitrix24
-	 * @param $contact_id string a contact id in Bitrix24
-	 * @param $requisites array an array with custromer address data
-	 * @param $contact array an array with contact data. For naming requisites
-	 * @param $debug string to enable debug data from function
-	 * @return false boolean If any errors return false
-	 * @return true boolean If Requisites added successfully
-	 */
+
 
 	/**
 	 * Returns country name by id
@@ -844,7 +833,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 *
 	 * @return string
 	 *
-	 * @since version 1.0
+	 * @since 1.0.0
 	 */
 	private function getPaymentMethodName($payment_method_id)
 	{
@@ -868,7 +857,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 *
 	 * @return string
 	 *
-	 * @since version 1.1
+	 * @since 1.1.0
 	 */
 	private function getOrderStatusName($order_status_id)
 	{
@@ -1027,7 +1016,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 * @param   array  $debug         boolean to enable debug data from function
 	 * @param   int    $order_id      JoomShopping order id for saving JoomShopping and Bitrix24 entitie's relationship to database
 	 *
-	 * @return array Bitrix24 response array
+	 * @return array/bool Bitrix24 response array or false if there is no anything in Bitrix 24 response
 	 *
 	 * @see   https://dev.1c-bitrix.ru/rest_help/crm/productrow/crm_item_productrow_add.php
 	 * @since 2.0.0
@@ -1140,7 +1129,15 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	}
 
-
+	/**
+	 * function for to add Requisites to Contact in Bitrix24
+	 * @param $contact_id string a contact id in Bitrix24
+	 * @param $requisites array an array with custromer address data
+	 * @param $contact array an array with contact data. For naming requisites
+	 * @param $debug string to enable debug data from function
+	 * @return false boolean If any errors return false
+	 * @return true boolean If Requisites added successfully
+	 */
 	private function addRequisites($contact_id, $requisites, $debug): bool
 	{
 
@@ -1248,13 +1245,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 
 	/**
-	 *  Integration with Radical Form plugin - https://hika.su/rasshireniya/radical-form
+	 *  Integration with Radical Form plugin
 	 *  Contact form plugin
 	 *
 	 * @param $clear    array    это массив данных, полученный от формы и очищенный ото всех вспомогательных данных.
 	 * @param $input    array    это полный массив данных, включая все вспомогательные данные о пользователе и передаваемой форме. Этот массив передается по ссылке и у вас есть возможность изменить переданные данные. В примере выше именно это и происходит, когда вместо вбитого в форму имени устанавливается фиксированная константа.
-	 * @param $params   object        это объект, содержащий все параметры плагина и вспомогательные данные, которые известны при отправке формы. Например здесь можно получить адрес папки, куда были загружены фотографии (их можно переместить в нужное вам место):
-	 *
+	 * @param $params   object   это объект, содержащий все параметры плагина и вспомогательные данные, которые известны при отправке формы. Например здесь можно получить адрес папки, куда были загружены фотографии (их можно переместить в нужное вам место):
+	 * @see https://hika.su/rasshireniya/radical-form
 	 * @return bool
 	 */
 	public function onBeforeSendRadicalForm($clear, $input, $params)
@@ -1333,8 +1330,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 		}//end foreach Process form data
 
-
-		/*
+		/**
 		* Set assigned id form plugin params
 		*/
 
@@ -1343,12 +1339,12 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			$qr["fields"]["ASSIGNED_BY_ID"] = $this->params->get("assigned_by_id");
 		}
 
-		/*
+		/**
 		* Lead source form plugin params
 		*/
 		$qr["fields"]["SOURCE_ID"] = $this->params->get("lead_source");
 		$qr["fields"]["COMMENTS"]  .= "<br/>" . $input["pagetitle"] . "<br/><a href='" . $input["url"] . "'>" . $input["url"] . "</a>";
-		/*
+		/**
 		* Add UTMs into array
 		*/
 
@@ -1475,12 +1471,12 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 
 	/**
-	 *    Function to get lead info from Bitrix24
+	 *  Function to get lead info from Bitrix24
 	 *
-	 * @param   string  $lead_id  lead id in Bitrix 24
+	 * @param string $lead_id  lead id in Bitrix 24
 	 *
-	 * @return    object    lead info object
-	 * @since    2.5.0
+	 * @return object lead info object
+	 * @since 2.5.0
 	 */
 	private function getLead($lead_id)
 	{
@@ -1499,12 +1495,12 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	} //getDeal
 
 	/**
-	 *    Function to get deal info from Bitrix24
+	 *  Function to get deal info from Bitrix24
 	 *
-	 * @param   string    lead id in Bitrix 24
+	 * @param string lead id in Bitrix 24
 	 *
-	 * @return    object    lead info object
-	 * @since    2.5.0
+	 * @return object lead info object
+	 * @since 2.5.0
 	 */
 	private function getDeal($deal_id)
 	{
@@ -1697,7 +1693,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		echo '<div class="main-card p-3">';
 		echo '
 				<div class="row py-3">
-					<div class="col-2">
+					<div class="col-12 col-md-2">
 						<a href="https://web-tolk.ru" target="_blank" id="web_tolk_link" class="d-flex" title="Go to https://web-tolk.ru">
 									<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
 										 <g>
@@ -1708,7 +1704,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 									</svg>
 						</a>
 					</div>
-					<div class="col-10">
+					<div class="col-12 col-md-10">
 								<h4>WT JoomShopping Bitrix 24 PRO</h4>
 								<p>' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_DESC') . '</p>
 					</div>
@@ -1740,7 +1736,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$fieldset->addAttribute('name', 'wt_jshopping_b24_pro');
 		$field = $fieldset->addChild('field');
 		$field->addAttribute('type', 'b24crmproducts');
-		$field->addAttribute('label', 'Битркс 24 product id');
+		$field->addAttribute('label', 'PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_LIST_FIELD_LABEL');
 		$field->addAttribute('name', 'bitrix24_product_id');
 		$field->addAttribute('class', 'form-control');
 		$field->addAttribute('addfieldprefix', 'Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields');
@@ -1780,7 +1776,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		// Если включена настройка использования товаров Битрикс 24 с вариациями
 		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
 		{
-			$view->dep_attr_td_header = '<th width="100">Вариации товара Битрикс 24<br/><small class="text-danger">После добавления атрибутов сохраните товар</small></th>';
+			$view->dep_attr_td_header = '<th width="100">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_ATTRIBUTES_TABLE_HEADER').'<br/><small class="text-danger">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_ATTRIBUTES_TABLE_HEADER_NOTE').'</small></th>';
 			foreach ($view->lists['attribs'] as $k => $v)
 			{
 
@@ -1824,7 +1820,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 				else
 				{
-					$b24_product_variation_id[] = '<span class="badge bg-danger">Не выбран родительский товар Битрикс 24</span>';
+					$b24_product_variation_id[] = '<span class="badge bg-danger">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_PARENT_PRODUCT_ID_NOT_SPECIFIED').'</span>';
 				}
 				$view->dep_attr_td_row[$k] = '<td>' . implode('', $b24_product_variation_id) . '</td>';
 			}//end foreach $lists
@@ -1839,7 +1835,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				'bitrix24_products_variations_modal',
 				[
 //						'url'         => $url,
-					'title'       => Text::_('Вариации товара. В яз.константу'),
+					'title'       => Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_MODAL_HEADER'),
 					'closeButton' => true,
 					'height'      => '100%',
 					'width'       => '100%',
@@ -1852,7 +1848,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 						  <thead>
 						    <tr>
 						      <th>Название</th>
-						      <th>Кнопка</th>
+						      <th></th>
 						    </tr>
 						  </thead>
 						  <tbody>
@@ -1879,7 +1875,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	/**
 	 * Сохраняем id товара Битрикс 24 в свою таблицу
 	 *
-	 * @param $product
+	 * @param $product object
 	 *
 	 *
 	 * @throws \Exception
@@ -1979,10 +1975,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	/**
 	 * Чистим таблицу связей при удалении товара в JoomShopping
-	 *
-	 * @param   array  $ids  id удаляемых товаров
-	 *
-	 *
+	 * @param  $ids array id удаляемых товаров
 	 * @since 3.0.0
 	 */
 	public function onAfterRemoveProduct(&$ids)
@@ -2146,25 +2139,6 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$priority = 'Log::' . $priority;
 		Log::add($data, $priority, 'plg_system_wt_jshopping_b24_pro');
 
-	}
-
-
-	/**
-	 * Триггер вызывается перед сохранением зависимого атрибута при сохранении товара в админке.
-	 * В функции вычленяем id вариации товара для Битрикс 24, сохраняем в свою таблицу.
-	 * Заметаем следы.
-	 *
-	 * @param $productAttribut object Объект Table - productAttribut
-	 * @param $product         object Объект товара
-	 * @param $product_id      string|int id товара
-	 * @param $post            array Массив с данными всей формы товара после $Factory::getApplication()->getInput()->getArray()
-	 * @param $k
-	 *
-	 * @see   \Joomla\Component\Jshopping\Administrator\Model\ProductsModel::saveAttributes
-	 * @since 3.1.0
-	 */
-	public function onBeforeProductAttributStore(&$productAttribut, &$product, &$product_id, &$post, $k)
-	{
 	}
 
 }//plgSystemWt_jshopping_b24_pro

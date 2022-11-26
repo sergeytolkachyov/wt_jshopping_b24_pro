@@ -14,9 +14,6 @@ document.addEventListener('DOMContentLoaded', function () {
 		let b24_product_variations_buttons = document.querySelectorAll('[data-b24-product-variation-select-btn]');
 		b24_product_variations_buttons.forEach(function (button, index, array) {
 			button.addEventListener('click', function (event) {
-				/**
-				 * В атрибуты кнопок в <template> добавить jshop_product_id,jshop_product_attr_id
-				 */
 				fillB24ProductVariationIdField(window.jshop_product_id,window.jshop_product_attr_id, button.getAttribute('data-b24-product-variation-select-btn'));
 				window.Joomla.Modal.getCurrent().close();
 			})
@@ -30,7 +27,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				let start = button.getAttribute('data-b24-product-list-start');
 				getBitrix24ProductVariationsList(start);
-
 
 			})
 
@@ -50,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
 			url: 'index.php?option=com_ajax&plugin=wt_jshopping_b24_pro&group=system&action=getBitrix24ProductsVariations&format=json&b24_parent_product_id='+product_parent_id_for_b24+'&start=' + start,
 			onSuccess: function (response, xhr) {
 				// Тут делаем что-то с результатами
-				// Проверяем пришли ли ответы
+				// Проверяем, пришли ли ответы
 				if (response !== '') {
 
 					let result = JSON.parse(response);
