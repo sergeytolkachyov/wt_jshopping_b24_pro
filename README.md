@@ -1,8 +1,11 @@
-[![Version](https://img.shields.io/badge/Version-3.0.0-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github) [![Status](https://img.shields.io/badge/Status-stable-green.svg)]() [![JoomlaVersion](https://img.shields.io/badge/Joomla-4.2-orange.svg)]() [![JoomShoppingVersion](https://img.shields.io/badge/JoomShopping-5.1.x-important.svg)]() [![DocumentationRus](https://img.shields.io/badge/Documentation-rus-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github) [![DocumentationEng](https://img.shields.io/badge/Documentation-eng-blueviolet.svg)](https://web-tolk.ru/en/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github)
+[![Version](https://img.shields.io/badge/Version-3.1.0-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github) [![Status](https://img.shields.io/badge/Status-stable-green.svg)]() [![JoomlaVersion](https://img.shields.io/badge/Joomla-4.2-orange.svg)]() [![JoomShoppingVersion](https://img.shields.io/badge/JoomShopping-5.1.x-important.svg)]() [![DocumentationRus](https://img.shields.io/badge/Documentation-rus-blue.svg)](https://web-tolk.ru/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github) [![DocumentationEng](https://img.shields.io/badge/Documentation-eng-blueviolet.svg)](https://web-tolk.ru/en/dev/joomla-plugins/wt-joomshopping-bitrix24-pro.html?utm_source=github)
 
 # WT JoomShopping Bitrix24 PRO free integration Joomla plugin
 Joomla 3 JoomShopping system plugin WT JoomShopping Bitrix24 PRO. The plugin allows you to send JoomShopping order data to Bitrix24 CRM.
 PRO-version of the plugin for sending orders from the JoomShopping online store in Bitrix24 CRM.
+
+# v.3.1.0
+Added mapping of JoomShopping product attributes and Bitrix 24 product variations
 
 # v.3.0.0
 ## Joomla 4 support
