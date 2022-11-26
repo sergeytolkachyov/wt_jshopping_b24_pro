@@ -20,7 +20,7 @@ defined( '_JEXEC' ) or die;
 	 *      C_REST_IGNORE_SSL = true //turn off validate ssl by curl
 	 **/
 
-//define('C_REST_BLOCK_LOG',true);
+define('C_REST_BLOCK_LOG',true);
 	class CRest
 	{
 		const BATCH_COUNT    = 50;//count batch 1 query
