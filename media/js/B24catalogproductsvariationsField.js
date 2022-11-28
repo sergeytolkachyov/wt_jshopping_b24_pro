@@ -1,11 +1,20 @@
 document.addEventListener('DOMContentLoaded', function () {
 	let wt_jshopping_b24_pro_options = Joomla.getOptions('wt_jshopping_b24_pro');
 	const b24_product_variations_list_modal = document.getElementById("bitrix24_products_variations_modal");
+	const b24_product_main_variation_modal = document.getElementById("b24_product_main_variation_modal");
+
 	b24_product_variations_list_modal.addEventListener('shown.bs.modal', event => {
 		window.jshop_product_id = event.relatedTarget.getAttribute('data-product-id');
 		window.jshop_product_attr_id = event.relatedTarget.getAttribute('data-product-attr-id');
+		window.wt_b24_product_variation_target_input_field = "b24-product-variation-"+event.relatedTarget.getAttribute('data-product-id')+"-"+event.relatedTarget.getAttribute('data-product-attr-id');
 		let start = 0;
-		getBitrix24ProductVariationsList(start,wt_jshopping_b24_pro_options.product_parent_id_for_b24);
+		getBitrix24ProductVariationsList(start,wt_jshopping_b24_pro_options.product_parent_id_for_b24,'bitrix24_products_variations_modal');
+	})
+
+	b24_product_main_variation_modal.addEventListener('shown.bs.modal', event => {
+		let start = 0;
+		window.wt_b24_product_variation_target_input_field = 'b24-product-main-variation';
+		getBitrix24ProductVariationsList(start,wt_jshopping_b24_pro_options.product_parent_id_for_b24,'b24_product_main_variation_modal');
 	})
 
 
@@ -14,7 +23,7 @@ document.addEventListener('DOMContentLoaded', function () {
 		let b24_product_variations_buttons = document.querySelectorAll('[data-b24-product-variation-select-btn]');
 		b24_product_variations_buttons.forEach(function (button, index, array) {
 			button.addEventListener('click', function (event) {
-				fillB24ProductVariationIdField(window.jshop_product_id,window.jshop_product_attr_id, button.getAttribute('data-b24-product-variation-select-btn'));
+				fillB24ProductVariationIdField(button.getAttribute('data-b24-product-variation-select-btn'));
 				window.Joomla.Modal.getCurrent().close();
 			})
 
@@ -27,20 +36,25 @@ document.addEventListener('DOMContentLoaded', function () {
 
 				let start = button.getAttribute('data-b24-product-list-start');
 				getBitrix24ProductVariationsList(start);
-
 			})
 
 		})
 
 	}
 
-	function fillB24ProductVariationIdField(jshop_product_id,jshop_product_attr_id,b24ProductVariationId) {
-		let wt_jshopping_b24_pro_options = Joomla.getOptions('wt_jshopping_b24_pro');
-		let b24_product_variation_id_input_field = document.getElementById("b24-product-variation-"+jshop_product_id+"-"+jshop_product_attr_id);
-		b24_product_variation_id_input_field.value = b24ProductVariationId;
+	/**
+	 * Помещаем id вариации товара в поле с id window.wt_b24_product_variation_target_input_field
+	 * @param b24ProductVariationId
+	 */
+	function fillB24ProductVariationIdField(b24ProductVariationId) {
+
+		let product_variation_input_field = document.getElementById(window.wt_b24_product_variation_target_input_field);
+		console.log(product_variation_input_field);
+		product_variation_input_field.value = b24ProductVariationId;
+
 	}
 
-	function getBitrix24ProductVariationsList(start,product_parent_id_for_b24) {
+	function getBitrix24ProductVariationsList(start,product_parent_id_for_b24, modal_id) {
 		start = parseInt(start);
 		Joomla.request({
 			url: 'index.php?option=com_ajax&plugin=wt_jshopping_b24_pro&group=system&action=getBitrix24ProductsVariations&format=json&b24_parent_product_id='+product_parent_id_for_b24+'&start=' + start,
@@ -56,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
 					if (result.success === true) {
 
 						if (result.data[0].error_description) {
-							var modal_body = document.querySelector("#bitrix24_products_variations_modal .modal-body");
+							var modal_body = document.querySelector("#"+modal_id+" .modal-body");
 							modal_body.innerHTML = '<div class="alert alert-danger"><h4>' + result.data[0].error + '</h4><p>' + result.data[0].error_description + '</p></div>';
 							return false;
 						}
@@ -66,9 +80,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
 							// Находим элемент tbody таблицы
 							// и шаблон строки
-							var tbody = document.querySelector("#bitrix24_products_variations_modal_product_table tbody");
+							var tbody = document.querySelector("#"+modal_id+"_product_table tbody");
 							tbody.innerHTML = '';
-							var template = document.querySelector("#bitrix24_products_variations_modal_productrow");
+							var template = document.querySelector("#"+modal_id+"_productrow");
 
 							result.data[0].result.products.forEach(function (item, index, array) {
 								// Клонируем новую строку и вставляем её в таблицу
@@ -84,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 							// // Клонируем новую строку ещё раз и вставляем её в таблицу
 
-							var pagination_container = document.querySelector("#bitrix24_products_variations_modal_product_pagination");
+							var pagination_container = document.querySelector("#"+modal_id+"_product_pagination");
 
 							// var template_pagination_button = document.querySelector("#bitrix24_products_field_" + wt_jshopping_b24_pro_options.modal_id + "_product_pagination");
 							let b24_pagination_buttons = Math.ceil(parseInt(result.data[0].total) / 50);
