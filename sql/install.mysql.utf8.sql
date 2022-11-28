@@ -13,7 +13,9 @@ CREATE TABLE IF NOT EXISTS `#__wt_jshopping_bitrix24_pro_products_relationship` 
 ) DEFAULT CHARSET=utf8 ;
 
 CREATE TABLE IF NOT EXISTS `#__wt_jshopping_bitrix24_pro_prod_attr_to_variations` (
-    `product_id` int(11) UNIQUE,
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `product_id` int(11),
     `product_attr_id` int(11),
-    `b24_product_variation_id` int(11)
+    `b24_product_variation_id` int(11),
+    PRIMARY KEY (`id`)
 ) DEFAULT CHARSET=utf8 ;
