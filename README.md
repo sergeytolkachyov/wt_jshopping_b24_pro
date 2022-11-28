@@ -6,7 +6,13 @@ PRO-version of the plugin for sending orders from the JoomShopping online store 
 
 # v.3.1.0
 Added mapping of JoomShopping product attributes and Bitrix 24 product variations
-
+## Support for Bitrix 24 products with variations
+Added functionality for setting up links between JoomShopping products with dependent attributes and Bitrix 24 products with variations. These settings are used to update prices and balances for both the product itself and each attribute of the JoomShopping product.
+Bitrix 24 is gradually abandoning the use of simple goods. Even a product that looks like a product without variations is actually a product with a single variation. Therefore, a setting has been added that allows you to specify the main variation of the Bitrix 24 product for the JoomShopping product without attributes.
+If you have accepted goods to different warehouses in the Bitrix 24 warehouse accounting, the total number of goods for all warehouses comes to the site.
+### Product variations in deals and leads
+Now, in Bitrix 24 transactions, products of a specific variation are indicated (with matching configured). This means that data on specific product variations will be reserved in the warehouse and displayed in reports. For example, a T-shirt of the size of S.
+**Will be added to the deal.This functionality only works with the WT JShopping Bitrix 24 PRO CRON plugin version 1.1.0 or higher**
 # v.3.0.0
 ## Joomla 4 support
 Starting from version 3.0.0, the plugin supports only Joomla 4 and JoomShopping 5. The plugin has been rewritten taking into account the new structure of Joomla 4 plugins, which means that it will work with Joomla 5 as well.
