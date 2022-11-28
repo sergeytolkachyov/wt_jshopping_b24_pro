@@ -4,15 +4,16 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>25/10/2021</creationDate>
+	<creationDate>26/11/2021</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>3.0.0</version>
+    <version>3.1.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <namespace path="src">Joomla\Plugin\System\Wt_jshopping_b24_pro</namespace>
 	<scriptfile>script.php</scriptfile>
     <media folder="media" destination="plg_system_wt_jshopping_b24_pro">
 		<folder>js</folder>
+		<folder>images</folder>
 	</media>
 	<files>
         <folder plugin="wt_jshopping_b24_pro">src</folder>
@@ -197,6 +198,24 @@
                        name="default_bitrix24_store_iblock_id"
                        label="PLG_WT_JSHOPPING_B24_PRO_DEFAULT_BITRIX24_STORE_IBLOCK_ID"
                        showon="b24_product_type_for_product_rows:product"/>
+
+                <field type="radio"
+                       name="use_bitrix24_product_variants"
+                       label="Используются товары Битрикс 24 с вариациями?"
+                       description="В Битрикс 24 вариации товаров - это аналог зависимых атрибутов JoomShopping. Внутренняя архетиктура Битрикс 24 предполагает, что простые товары хранятся в одном каталоге, а вариации товаров - в другом, скрытом каталоге. Чтобы получить данные вариаций товаров по API нужно указывать id этого каталога. В web-интерфейсе Битрикс 24 каталог вариаций товаров не отображается."
+                       default="0"
+                       class="btn-group btn-group-yesno"
+                       showon="b24_product_type_for_product_rows:product"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
+                       type="B24CatalogCatalogList"
+                       name="bitrix24_products_variants_store_iblock_id"
+                       label="Товарный каталог товаров с вариациями (для обновления цен и остатков)"
+                       description="Это поле используется для синхронизации цен и остатков товаров с вариациями (на стороне Битрикс 24) и товаров с атрибутами (на стороне JoomShopping), настроенных с помощью плагина WT JShopping Bitrix 24 - CRON."
+                       showon="b24_product_type_for_product_rows:product[AND]use_bitrix24_product_variants:1"/>
                 <field type="radio"
                        name="product_link"
                        label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_LINK"

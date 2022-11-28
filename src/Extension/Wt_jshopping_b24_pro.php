@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     3.0.0
+ * @version     3.1.0
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,8 +13,8 @@ namespace Joomla\Plugin\System\Wt_jshopping_b24_pro\Extension;
 defined('_JEXEC') or die;
 
 use Joomla\Application\SessionAwareWebApplicationInterface;
-use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
@@ -83,6 +83,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 */
 	private function prepareDebugInfo(string $debug_section_header, $debug_data): void
 	{
+		$app = Factory::getApplication();
+		if ($app->getInput()->get('option') == 'jshopping' &&
+			$app->getInput()->get('controller') == 'checkout' &&
+			$app->getInput()->get('step') == '1111')
+		{
+			// Здесь делаем что-то.
+		}
 		// Берем сессию только в HTML фронте
 		$session = (Factory::getApplication() instanceof SessionAwareWebApplicationInterface ? Factory::getApplication()->getSession() : null);
 		if (is_array($debug_data) || is_object($debug_data))
@@ -148,6 +155,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$order->load($orderId);
 		$order->getAllItems();
 		$plugin_mode = $this->params->get('lead_vs_deal');
+
+
 
 		$qr = array(
 			'fields' => array(),
@@ -238,15 +247,18 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 						}
 						elseif ($value == "shipping_method_id")
 						{//название способа доставки
-							$store_field .= $this->getShippingMethodName($order->$value) . " ";
+							$store_field .= $order->getShippingName() . " ";
+//							$store_field .= $this->getShippingMethodName($order->$value) . " ";
 						}
 						elseif ($value == "payment_method_id")
 						{//название способа оплаты
-							$store_field .= $this->getPaymentMethodName($order->$value) . " ";
+							$store_field .= $order->getPaymentName() . " ";
+//							$store_field .= $this->getPaymentMethodName($order->$value) . " ";
 						}
 						elseif ($value == "order_status")
 						{//название статуса заказа
-							$store_field .= $this->getOrderStatusName($order->$value) . " ";
+//							$store_field .= $this->getOrderStatusName($order->$value) . " ";
+							$store_field .= $order->getStatus() . " ";
 						}
 						elseif ($value == "birthday" and ($order->$value == "0000-00-00" || $order->$value == ""))
 						{
@@ -279,15 +291,18 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 					}
 					elseif ($value == "shipping_method_id")
 					{//название способа доставки
-						$store_field .= $this->getShippingMethodName($order->$value) . " ";
+//						$store_field .= $this->getShippingMethodName($order->$value) . " ";
+						$store_field .= $order->getShippingName() . " ";
 					}
 					elseif ($value == "payment_method_id")
 					{//название способа оплаты
-						$store_field .= $this->getPaymentMethodName($order->$value) . " ";
+//						$store_field .= $this->getPaymentMethodName($order->$value) . " ";
+						$store_field .= $order->getPaymentName() . " ";
 					}
 					elseif ($value == "order_status")
 					{//название статуса заказа
-						$store_field .= $this->getOrderStatusName($order->$value) . " ";
+						$store_field .= $order->getStatus() . " ";
+//						$store_field .= $this->getOrderStatusName($order->$value) . " ";
 					}
 					elseif ($value == 'wt_sm_otpravka_pochta_ru_barcode')
 					{// трек-номер Почты России - WT SM Otpravka.pochta.ru
@@ -300,7 +315,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}
 
-			/*
+			/**
 			 * Если Сделка или Лид+Контакт
 			 */
 
@@ -336,7 +351,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 
 			}// end if deal or lead+contact
-			/*
+			/**
 			* Если простой Лид
 			*/
 			else
@@ -350,7 +365,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$qr["fields"]["SOURCE_ID"]          = $this->params->get('lead_source');
 		$qr["fields"]["SOURCE_DESCRIPTION"] = $this->params->get('source_description');
 
-		/*
+		/**
 		 * Тип сделки: продажа, продажа товара, продажа услуги и т.д.
 		 */
 
@@ -382,6 +397,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 
 			$jshopping_b24_products_relationship = $this->getJshoppingBitrix24ProductsRelationship($product_ids);
+			$this->prepareDebugInfo('Соответствие товаров JoomSHopping и Битрикс 24',$jshopping_b24_products_relationship);
 		}
 
 
@@ -393,7 +409,25 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				// Для добавления сущности товара (не товарной позции) к сделке нужно указывать ID товара в Битрикс 24.
 				if ($jshopping_b24_products_relationship[$item->product_id])
 				{
-					$product_rows[$a]["PRODUCT_ID"] = $jshopping_b24_products_relationship[$item->product_id];
+					$product_rows[$a]["PRODUCT_ID"] = $jshopping_b24_products_relationship[$item->product_id]['bitrix24_product_id'];
+					if($jshopping_b24_products_relationship[$item->product_id]['bitrix24_product_main_variaton_id'] > 0)
+					{
+						// Если указана основная вариация товара Б24 для товара JoomShopping, то устанавливаем её.
+						$product_rows[$a]["PRODUCT_ID"] = $jshopping_b24_products_relationship[$item->product_id]['bitrix24_product_main_variaton_id'];
+					}
+						//Если используются вариации товаров - находим для атрибута id вариации товара Битрикс 24
+					if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+					{
+						$order_item_active_attr_id = $this->getJShoppingActiveProductAttributeInOrder($item->product_id,$item->attributes);
+
+						// Приходит 0, если нет выборки
+						$attr_to_variation_id = $this->getJshoppingAttrToVariationId($item->product_id,$order_item_active_attr_id['product_attr_id']);
+						if ($attr_to_variation_id['b24_product_variation_id'] > 0)
+						{
+							$product_rows[$a]["PRODUCT_ID"] = $attr_to_variation_id['b24_product_variation_id'];
+						}
+
+					}
 				}
 				else
 				{
@@ -461,7 +495,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$this->checkUtms($qr);
 
 
-		/*
+		/**
 		 * Добавление лида или сделки на определенную стадию (с определенным статусом)
 		 */
 
@@ -487,7 +521,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 		if ($plugin_mode == "deal" || ($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1))
 		{
-			/*
+			/**
 			 * Ищем дубли контактов
 			 *
 			 */
@@ -520,7 +554,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 
 
-			/*
+			/**
 			 * Конец поиска дублей контактов
 			 *
 			 * Начинаем разбор.
@@ -590,7 +624,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 
 
-			/*
+			/**
 			 *  Найдены совпадения И по email И по телефону
 			 */
 			if (!is_null($b24contact_id_by_email) && !is_null($b24contact_id_by_phone))
@@ -604,7 +638,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 				else
 				{
-					/*
+					/**
 					 * Если CONTACT_ID разные - пишем все в комментарий к сделке/лиду.
 					 */
 
@@ -614,7 +648,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}// END Найдены совпадения И по email И по телефону
 
-			/*
+			/**
 			 *  У контакта совпал телефон, но не совпал email
 			 */
 			elseif (!is_null($b24contact_id_by_phone) && is_null($b24contact_id_by_email))
@@ -643,7 +677,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 			}// END У контакта совпал телефон, но не совпал email
 
-			/*
+			/**
 			 *  У контакта совпал email, но не совпал телефон
 			 */
 			elseif (!is_null($b24contact_id_by_email) && is_null($b24contact_id_by_phone))
@@ -672,7 +706,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 			}// END У контакта совпал email, но не совпал телефон
 
-			/*
+			/**
 			 *  Нет совпадений с контактами. Создаем новый контакт.
 			 */
 			elseif (is_null($b24contact_id_by_email) && is_null($b24contact_id_by_phone))
@@ -686,19 +720,19 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				else
 				{
 					$addRaddRequisitesResult = $this->addRequisites($b24contact_id, $requisites, $debug);
-					/*
+					/**
 					 * Если ошибка добавления реквизитов
 					 */
 					if ($addRaddRequisitesResult == false)
 					{
-						/*
+						/**
 						 * Пишем реквизиты в комментарий
 						 */
 						$qr["fields"]["COMMENTS"] .= $this->prepareDataToSaveToComment($requisites, Text::_('PLG_WT_JSHOPPING_B24_PRO_ALERT_MESSAGE_6'));
 					}
 					else
 					{
-						/*
+						/**
 						 * Добавляем к лиду/сделке CONTACT_ID
 						 */
 						$qr["fields"]["CONTACT_ID"] = $b24contact_id;
@@ -719,14 +753,14 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 			if ($plugin_mode == "deal")
 			{
-				/*
+				/**
 				 * Добавляем сделку
 				 */
 				$b24result = $this->addDeal($qr, $product_rows, $debug, $order->order_id);
 			}
 			elseif ($plugin_mode == "lead" && $this->params->get('create_contact_for_unknown_lead') == 1)
 			{
-				/*
+				/**
 				 * Добавляем лид
 				 */
 				$b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
@@ -747,15 +781,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	}
 
-	/*
-	 * function for to add Requisites to Contact in Bitrix24
-	 * @param $contact_id string a contact id in Bitrix24
-	 * @param $requisites array an array with custromer address data
-	 * @param $contact array an array with contact data. For naming requisites
-	 * @param $debug string to enable debug data from function
-	 * @return false boolean If any errors return false
-	 * @return true boolean If Requisites added successfully
-	 */
+
 
 	/**
 	 * Returns country name by id
@@ -780,7 +806,6 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 		return $country_name["name_" . $current_lang];
 	}
-
 
 
 	/** Returns coupon code by id
@@ -835,7 +860,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 *
 	 * @return string
 	 *
-	 * @since version 1.0
+	 * @since 1.0.0
 	 */
 	private function getPaymentMethodName($payment_method_id)
 	{
@@ -859,7 +884,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 *
 	 * @return string
 	 *
-	 * @since version 1.1
+	 * @since 1.1.0
 	 */
 	private function getOrderStatusName($order_status_id)
 	{
@@ -1018,7 +1043,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 * @param   array  $debug         boolean to enable debug data from function
 	 * @param   int    $order_id      JoomShopping order id for saving JoomShopping and Bitrix24 entitie's relationship to database
 	 *
-	 * @return array Bitrix24 response array
+	 * @return array/bool Bitrix24 response array or false if there is no anything in Bitrix 24 response
 	 *
 	 * @see   https://dev.1c-bitrix.ru/rest_help/crm/productrow/crm_item_productrow_add.php
 	 * @since 2.0.0
@@ -1131,7 +1156,15 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	}
 
-
+	/**
+	 * function for to add Requisites to Contact in Bitrix24
+	 * @param $contact_id string a contact id in Bitrix24
+	 * @param $requisites array an array with custromer address data
+	 * @param $contact array an array with contact data. For naming requisites
+	 * @param $debug string to enable debug data from function
+	 * @return false boolean If any errors return false
+	 * @return true boolean If Requisites added successfully
+	 */
 	private function addRequisites($contact_id, $requisites, $debug): bool
 	{
 
@@ -1239,13 +1272,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 
 	/**
-	 *  Integration with Radical Form plugin - https://hika.su/rasshireniya/radical-form
+	 *  Integration with Radical Form plugin
 	 *  Contact form plugin
 	 *
 	 * @param $clear    array    это массив данных, полученный от формы и очищенный ото всех вспомогательных данных.
 	 * @param $input    array    это полный массив данных, включая все вспомогательные данные о пользователе и передаваемой форме. Этот массив передается по ссылке и у вас есть возможность изменить переданные данные. В примере выше именно это и происходит, когда вместо вбитого в форму имени устанавливается фиксированная константа.
-	 * @param $params   object        это объект, содержащий все параметры плагина и вспомогательные данные, которые известны при отправке формы. Например здесь можно получить адрес папки, куда были загружены фотографии (их можно переместить в нужное вам место):
-	 *
+	 * @param $params   object   это объект, содержащий все параметры плагина и вспомогательные данные, которые известны при отправке формы. Например здесь можно получить адрес папки, куда были загружены фотографии (их можно переместить в нужное вам место):
+	 * @see https://hika.su/rasshireniya/radical-form
 	 * @return bool
 	 */
 	public function onBeforeSendRadicalForm($clear, $input, $params)
@@ -1324,8 +1357,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			}
 		}//end foreach Process form data
 
-
-		/*
+		/**
 		* Set assigned id form plugin params
 		*/
 
@@ -1334,20 +1366,20 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			$qr["fields"]["ASSIGNED_BY_ID"] = $this->params->get("assigned_by_id");
 		}
 
-		/*
+		/**
 		* Lead source form plugin params
 		*/
 		$qr["fields"]["SOURCE_ID"] = $this->params->get("lead_source");
 		$qr["fields"]["COMMENTS"]  .= "<br/>" . $input["pagetitle"] . "<br/><a href='" . $input["url"] . "'>" . $input["url"] . "</a>";
-		/*
+		/**
 		* Add UTMs into array
 		*/
 
 		$this->checkUtms($qr);
 
-		/*
-		* Create a lead
-		*/
+		/**
+		 * Create a lead
+		 */
 		$result = $this->addLead($qr, "", "0");
 	}
 
@@ -1458,16 +1490,20 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		{
 			return $this->getBitrix24Products();
 		}
+		elseif (isset($action) && $action == 'getBitrix24ProductsVariations')
+		{
+			return $this->getBitrix24ProductsVariations();
+		}
 	}//Включены ли входящие подключения из Битрикс 24
 
 
 	/**
-	 *    Function to get lead info from Bitrix24
+	 *  Function to get lead info from Bitrix24
 	 *
-	 * @param   string  $lead_id  lead id in Bitrix 24
+	 * @param string $lead_id  lead id in Bitrix 24
 	 *
-	 * @return    object    lead info object
-	 * @since    2.5.0
+	 * @return object lead info object
+	 * @since 2.5.0
 	 */
 	private function getLead($lead_id)
 	{
@@ -1486,12 +1522,12 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	} //getDeal
 
 	/**
-	 *    Function to get deal info from Bitrix24
+	 *  Function to get deal info from Bitrix24
 	 *
-	 * @param   string    lead id in Bitrix 24
+	 * @param string lead id in Bitrix 24
 	 *
-	 * @return    object    lead info object
-	 * @since    2.5.0
+	 * @return object lead info object
+	 * @since 2.5.0
 	 */
 	private function getDeal($deal_id)
 	{
@@ -1640,20 +1676,11 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	/**
 	 * Добавляем вкладки в карточки товаров для маппинга товаров JoomShopping <=> Битрикс 24
-	 */
-	/**
 	 * Добавляет вкладку в табы карточки товара JoomShopping
 	 * @since 3.0.0
 	 */
 	public function onDisplayProductEditTabsEndTab(&$row, &$lists, &$tax_value)
 	{
-//		$addon = \JSFactory::getTable('addon');
-//		$addon->loadAlias('wt_jshopping_custom_fields');
-//		$addon_params = (object) $addon->getParams();
-//		if (empty($addon_params->wt_jshopping_custom_fields_products))
-//		{
-//			return;
-//		}
 		echo '<li class="nav-item">
 				<a href="#product_wt_jshopping_b24_pro" data-toggle="tab" class="nav-link">
 					<span class="fw-bold me-2 p-1">
@@ -1662,18 +1689,21 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 					 </span>
 				Bitrix 24';
 
-		if($this->params->get('bitrix24_inbound_integration',0) == 1 &&
-			$this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1 ||
-			$this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1
+		if ($this->params->get('bitrix24_inbound_integration', 0) == 1 &&
+			$this->params->get('bitrix24_inbound_update_jshopping_products_prices', 0) == 1 ||
+			$this->params->get('bitrix24_inbound_update_jshopping_products_quantities', 0) == 1
 
-		){
+		)
+		{
 			echo '<span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-circle bg-danger"><span class="visually-hidden">pay attantion</span></span>';
 		}
 
-			  echo '</a></li>';
+		echo '</a></li>';
 	}
 
 	/**
+	 * Добавляет таб Битрикс 24 в карточку товара
+	 *
 	 * @param $pane
 	 * @param $row
 	 * @param $lists
@@ -1686,12 +1716,11 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 
 	public function onDisplayProductEditTabsEnd(&$pane, &$row, &$lists, &$tax_value, &$currency)
 	{
-
 		echo '<div id="product_wt_jshopping_b24_pro" class="tab-pane">';
 		echo '<div class="main-card p-3">';
 		echo '
 				<div class="row py-3">
-					<div class="col-2">
+					<div class="col-12 col-md-2">
 						<a href="https://web-tolk.ru" target="_blank" id="web_tolk_link" class="d-flex" title="Go to https://web-tolk.ru">
 									<svg width="200" height="50" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
 										 <g>
@@ -1702,24 +1731,27 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 									</svg>
 						</a>
 					</div>
-					<div class="col-10">
+					<div class="col-12 col-md-10">
 								<h4>WT JoomShopping Bitrix 24 PRO</h4>
 								<p>' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_DESC') . '</p>
 					</div>
 				</div>';
 
-		if($this->params->get('bitrix24_inbound_integration',0) == 1 &&
-				$this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1 ||
-				$this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1
+		if ($this->params->get('bitrix24_inbound_integration', 0) == 1 &&
+			$this->params->get('bitrix24_inbound_update_jshopping_products_prices', 0) == 1 ||
+			$this->params->get('bitrix24_inbound_update_jshopping_products_quantities', 0) == 1
 
-		  ){
-			 $message = '<div class="alert alert-warning">';
-					if($this->params->get('bitrix24_inbound_update_jshopping_products_prices',0) == 1){
-						$message .= '<p><span class="text-danger fw-bold">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_PRICE_UPDATE_ALERT').'</span></p>';
-					}
-					if($this->params->get('bitrix24_inbound_update_jshopping_products_quantities',0) == 1){
-						$message .= '<p><span class="text-danger fw-bold">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_QUANTITY_UPDATE_ALERT').'</span></p>';
-					}
+		)
+		{
+			$message = '<div class="alert alert-warning">';
+			if ($this->params->get('bitrix24_inbound_update_jshopping_products_prices', 0) == 1)
+			{
+				$message .= '<p><span class="text-danger fw-bold">' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_PRICE_UPDATE_ALERT') . '</span></p>';
+			}
+			if ($this->params->get('bitrix24_inbound_update_jshopping_products_quantities', 0) == 1)
+			{
+				$message .= '<p><span class="text-danger fw-bold">' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_QUANTITY_UPDATE_ALERT') . '</span></p>';
+			}
 			$message .= Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_PRODUCT_UPDATE_ALERT');
 			$message .= '</div>';
 			echo $message;
@@ -1731,7 +1763,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$fieldset->addAttribute('name', 'wt_jshopping_b24_pro');
 		$field = $fieldset->addChild('field');
 		$field->addAttribute('type', 'b24crmproducts');
-		$field->addAttribute('label', 'Битркс 24 product id');
+		$field->addAttribute('label', 'PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_LIST_FIELD_LABEL');
 		$field->addAttribute('name', 'bitrix24_product_id');
 		$field->addAttribute('class', 'form-control');
 		$field->addAttribute('addfieldprefix', 'Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields');
@@ -1743,40 +1775,185 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			$form->bind($row->bitrix24_product_id);
 		}
 		echo $form->renderFieldset('wt_jshopping_b24_pro');
+
+		// Если включена настройка использования товаров Битрикс 24 с вариациями
+		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+		{
+			$b24_product_main_variation_id   = [];
+			$b24_product_main_variation_id[] = '<div class="control-group">
+            <div class="control-label"><label id="bitrix24_products_main_variation_modal-lbl" for="bitrix24_products_main_variation_modal">
+			    ID основной вариации товара Битрикс 24</label>
+			</div>
+        <div class="controls">';
+			if ($row->bitrix24_product_id['bitrix24_product_id'] > 0){
+				$b24_product_main_variation_id[] = '<div class="input-group">';
+				$b24_product_main_variation_id[] = '<span class="input-group-text bg-light border-light">' . HTMLHelper::image('media/plg_system_wt_jshopping_b24_pro/images/b24-icon-24x24.jpg', 'Bitrix24 icon', ['width' => '24', 'height' => '24']) . '</span>';
+				$b24_product_main_variation_id[] = '<input type="text" 
+															id="b24-product-main-variation"
+															class="form-control" 
+															name="b24_product_main_variation_id"
+															value="'.$row->bitrix24_product_id['bitrix24_product_main_variaton_id'].'" /> ';
+				$b24_product_main_variation_id[] = '<button type="button" 
+															data-product-id="' . $row->product_id . '" 
+															data-bs-toggle="modal"
+															data-bs-target="#b24_product_main_variation_modal"
+															class="btn btn-success">Выбрать</button>';
+				$b24_product_main_variation_id[] = '</div>';
+			} else {
+				$b24_product_main_variation_id[] = '<span class="badge bg-danger">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_PARENT_PRODUCT_ID_NOT_SPECIFIED').'</span>';
+			}
+
+			$b24_product_main_variation_id[] = '</div>';
+			echo implode('',$b24_product_main_variation_id);
+
+			echo HTMLHelper::_(
+				'bootstrap.renderModal',
+				'b24_product_main_variation_modal',
+				[
+//						'url'         => $url,
+					'title'       => Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_MODAL_HEADER'),
+					'closeButton' => true,
+					'height'      => '100%',
+					'width'       => '100%',
+					'modalWidth'  => '80',
+					'bodyHeight'  => '60',
+					'footer' => '<div class="btn-group" id="b24_product_main_variation_modal_product_pagination"></div>',
+					'class' => 'overflow-scroll'
+				],
+				'<table class="table table-hover table-striped" id="b24_product_main_variation_modal_product_table">
+						  <thead>
+						    <tr>
+						      <th>Название</th>
+						      <th></th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						    <!-- данные будут вставлены сюда -->
+						  </tbody>
+						</table>
+						
+						<template id="b24_product_main_variation_modal_productrow">
+						  <tr>
+						    <td></td>
+						    <td></td>
+						  </tr>
+						</template>'
+
+			);
+		}
+
 		echo '</div></div>';
+
+
 	}
+
 
 	/**
 	 * Перед редактированием товара JoomShopping в админке
 	 * получаем из таблицы связей в базе id товара в Битрикс 24
 	 *
-	 * @param $product
-	 * @param $related_products
-	 * @param $lists
-	 * @param $listfreeattributes
-	 * @param $tax_value
+	 * @param $view object Объект View product_edit
 	 *
-	 *
-	 * @since 3.0.0
+	 * @see   \Joomla\Component\Jshopping\Administrator\Controller\ProductsController::edit
+	 * @since 3.1.0
 	 */
-	public function onBeforeDisplayEditProduct(&$product, &$related_products, &$lists, &$listfreeattributes, &$tax_value)
+	public function onBeforeDisplayEditProductView($view)
 	{
-
-		$product_id = Factory::getApplication()->getInput()->getInt('product_id');
+		$product_id = $view->product->product_id;
 		$db         = Factory::getContainer()->get('DatabaseDriver');
 		$query      = $db->getQuery(true);
-		$query->select('bitrix24_product_id')
-			->from('#__wt_jshopping_bitrix24_pro_products_relationship')
-			->where($db->quoteName('jshopping_product_id') . ' = ' . $db->quote($product_id));
-		$db->setQuery($query);
-		$result                       = $db->loadAssoc();
-		$product->bitrix24_product_id = $result;
+		$query->select('bitrix24_product_id');
+
+		$jshopping_b24_products_relationship = $this->getJshoppingBitrix24ProductsRelationship([$product_id]);
+		$view->product->bitrix24_product_id = $jshopping_b24_products_relationship[$product_id];
+
+		// Если включена настройка использования товаров Битрикс 24 с вариациями
+		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+		{
+			$view->dep_attr_td_header = '<th width="100">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_ATTRIBUTES_TABLE_HEADER').'<br/><small class="text-danger">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_ATTRIBUTES_TABLE_HEADER_NOTE').'</small></th>';
+			foreach ($view->lists['attribs'] as $k => $v)
+			{
+				/**
+				 * Атрибуты товара
+				 */
+				$b24_product_variation_id   = [];
+				if ($view->product->bitrix24_product_id['bitrix24_product_id'] > 0)
+				{
+
+					// Приходит NULL, если нет выборки
+					$attr_to_variation_id = $this->getJshoppingAttrToVariationId($view->product->product_id,$v->product_attr_id);
+					$b24_product_variation_id[] = '<div class="input-group">';
+					$b24_product_variation_id[] = '<span class="input-group-text bg-light border-light">' . HTMLHelper::image('media/plg_system_wt_jshopping_b24_pro/images/b24-icon-24x24.jpg', 'Bitrix24 icon', ['width' => '24', 'height' => '24']) . '</span>';
+					$b24_product_variation_id[] = '<input type="text" 
+														id="b24-product-variation-' . $view->product->product_id . '-' . $v->product_attr_id . '"
+														class="form-control" 
+														name="b24_product_variation_id[]" 
+														value="' . $attr_to_variation_id['b24_product_variation_id'] . '" /> ';
+					$b24_product_variation_id[] = '<button type="button" 
+														data-product-id="' . $view->product->product_id . '" 
+														data-product-attr-id="' . $v->product_attr_id . '"
+														data-bs-toggle="modal"
+														data-bs-target="#bitrix24_products_variations_modal"
+														class="btn btn-success">Выбрать</button>';
+					$b24_product_variation_id[] = '</div>';
+
+				}
+				else
+				{
+					$b24_product_variation_id[] = '<span class="badge bg-danger">'.Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_PARENT_PRODUCT_ID_NOT_SPECIFIED').'</span>';
+				}
+				$view->dep_attr_td_row[$k] = '<td>' . implode('', $b24_product_variation_id) . '</td>';
+				unset($b24_product_variation_id);
+			}//end foreach $lists
+			// Для js-обработчика модального окна
+
+			$wt_jshopping_b24_pro_options = Factory::getApplication()->getDocument()->getScriptOptions('wt_jshopping_b24_pro');
+			$wt_jshopping_b24_pro_options['product_parent_id_for_b24'] = $view->product->bitrix24_product_id['bitrix24_product_id'];
+			Factory::getApplication()->getDocument()->addScriptOptions('wt_jshopping_b24_pro',$wt_jshopping_b24_pro_options);
+
+			$view->plugin_template_attribute .= HTMLHelper::_(
+				'bootstrap.renderModal',
+				'bitrix24_products_variations_modal',
+				[
+					'title'       => Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_PRODUCT_VARIATIONS_LIST_MODAL_HEADER'),
+					'closeButton' => true,
+					'height'      => '100%',
+					'width'       => '100%',
+					'modalWidth'  => '80',
+					'bodyHeight'  => '60',
+					'footer' => '<div class="btn-group" id="bitrix24_products_variations_modal_product_pagination"></div>',
+					'class' => 'overflow-scroll'
+				],
+				'<table class="table table-hover table-striped" id="bitrix24_products_variations_modal_product_table">
+						  <thead>
+						    <tr>
+						      <th>Название</th>
+						      <th></th>
+						    </tr>
+						  </thead>
+						  <tbody>
+						    <!-- данные будут вставлены сюда -->
+						  </tbody>
+						</table>
+						
+						<template id="bitrix24_products_variations_modal_productrow">
+						  <tr>
+						    <td></td>
+						    <td></td>
+						  </tr>
+						</template>'
+
+			);
+			Factory::getApplication()->getDocument()->getWebAssetManager()->registerAndUseScript('plg_system_wt_jshopping_b24_pro.B24catalogproductsvariationsField','plg_system_wt_jshopping_b24_pro/B24catalogproductsvariationsField.js')
+				->addInlineStyle('#bitrix24_products_variations_modal .modal-body {overflow-y: scroll; overflow-x:none;}');
+
+		}// end if use products variations
 	}
 
 	/**
 	 * Сохраняем id товара Битрикс 24 в свою таблицу
 	 *
-	 * @param $product
+	 * @param $product object
 	 *
 	 *
 	 * @throws \Exception
@@ -1784,30 +1961,104 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 */
 	public function onAfterSaveProduct(&$product)
 	{
-
-		$bitrix24_product_id = Factory::getApplication()->getInput()->post->get('bitrix24_product_id', '', 'raw');
-
-		if ($bitrix24_product_id && !empty($bitrix24_product_id))
-		{
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = "REPLACE INTO `#__wt_jshopping_bitrix24_pro_products_relationship` SET " . $db->quoteName('jshopping_product_id') . "=" . $db->quote($product->product_id) . ", " . $db->quoteName('bitrix24_product_id') . "=" . $db->quote($bitrix24_product_id);
-			$db->setQuery($query);
-
-			return $db->execute();
+		$post                = Factory::getApplication()->getInput()->post;
+		$bitrix24_product_id = $post->get('bitrix24_product_id', '', 'raw');
+		$bitrix24_product_main_variation_id = $post->get('b24_product_main_variation_id', '', 'raw');
+		$db                  = Factory::getContainer()->get('DatabaseDriver');
+		/**
+		 * Сохраняем связь родительских товаров JoomShopping и Битрикс 24 (простые товары).
+		 */
+		$query = "REPLACE INTO `#__wt_jshopping_bitrix24_pro_products_relationship` SET " . $db->quoteName('jshopping_product_id') . "=" . $db->quote($product->product_id) . ", " . $db->quoteName('bitrix24_product_id') . "=" . $db->quote($bitrix24_product_id);
+		// основная варииация товара Битрикс 24
+		if(isset($bitrix24_product_main_variation_id)){
+			$query .= ', ' . $db->quoteName('bitrix24_product_main_variaton_id') . '=' . $db->quote($bitrix24_product_main_variation_id);
 		}
-		else
-		{
-			return false;
-		}
+		$db->setQuery($query);
+		$db->execute();
 
+		// Если включена настройка использования товаров Битрикс 24 с вариациями
+		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+		{
+			/**
+			 * Атрибуты сохраняются только в случае, если есть массив с ценами.
+			 * @see \Joomla\Component\Jshopping\Administrator\Model\ProductsModel::saveAttributes
+			 */
+			$b24_product_variation_ids = $post->get('b24_product_variation_id', [], 'array');
+			$product_attr_id           = $post->get('product_attr_id', [], 'array');
+
+			/**
+			 *  Удаляем из базы атрибуты, которых нет в $post.
+			 *  Это происходит в том случае, когда атрибуты в товаре были, но их удалили.
+			 *  Код взят из модели JoomShopping
+			 * @see \Joomla\Component\Jshopping\Administrator\Model\ProductsModel::saveAttributes
+			 */
+
+			$list_exist_attr = $product->getAttributes();
+			if (isset($product_attr_id))
+			{
+				$list_saved_attr = $product_attr_id;
+			}
+			else
+			{
+				$list_saved_attr = array();
+			}
+			foreach ($list_exist_attr as $attr)
+			{
+				if (!in_array($attr->product_attr_id, $list_saved_attr))
+				{
+
+					$query = $db->getQuery(true);
+					$query->delete()
+						->from($db->quoteName('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations'))
+						->where($db->quoteName('product_id') . ' = ' . $db->quote($product->product_id))
+						->where($db->quoteName('product_attr_id') . ' = ' . $db->quote($attr->product_attr_id));
+					$db->setQuery($query)->execute();
+				}
+			}
+
+			/**
+			 * Сохраняем связь вариации товара с атрибутом JoomShopping
+			 */
+
+			if (isset($b24_product_variation_ids))
+			{
+				foreach ($b24_product_variation_ids as $k => $v)
+				{
+					$query = $db->getQuery(true);
+					$query->select($db->quoteName('id'))
+						->from($db->quoteName('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations'))
+						->where($db->quoteName('product_id') . ' = ' . $db->quote($product->product_id))
+						->where($db->quoteName('product_attr_id') . ' = ' . $db->quote($product_attr_id[$k]));
+					// Приходит 0, если нет выборки
+					$attr_to_variation_id = $db->setQuery($query)->loadResult();
+
+					if ((int) $attr_to_variation_id > 0)
+					{
+						$update_obj                           = new \stdClass();
+						$update_obj->id                       = $attr_to_variation_id;
+						$update_obj->product_id               = $product->product_id;
+						$update_obj->product_attr_id          = $product_attr_id[$k];
+						$update_obj->b24_product_variation_id = $b24_product_variation_ids[$k];
+						$db->updateObject('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations', $update_obj, 'id');
+
+					}
+					else
+					{
+						$update_obj                           = new \stdClass();
+						$update_obj->product_id               = $product->product_id;
+						$update_obj->product_attr_id          = $product_attr_id[$k];
+						$update_obj->b24_product_variation_id = $b24_product_variation_ids[$k];
+						$db->insertObject('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations', $update_obj);
+					}
+
+				}
+			}
+		}// если включены вариации товара
 	}
 
 	/**
 	 * Чистим таблицу связей при удалении товара в JoomShopping
-	 *
-	 * @param   array  $ids  id удаляемых товаров
-	 *
-	 *
+	 * @param  $ids array id удаляемых товаров
 	 * @since 3.0.0
 	 */
 	public function onAfterRemoveProduct(&$ids)
@@ -1820,7 +2071,19 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$query->delete($db->quoteName('#__wt_jshopping_bitrix24_pro_products_relationship'))
 			->where($conditions);
 		$db->setQuery($query);
-		$result = $db->execute();
+		$db->execute();
+		// Если включена настройка использования товаров Битрикс 24 с вариациями
+		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+		{
+			// Удаляем связи атрибутов товара с вариациями товара в Битрикс 24.
+			$query      = $db->getQuery(true);
+			$conditions = array(
+				$db->quoteName('product_id') . ' IN (' . implode(',', $ids) . ')'
+			);
+			$query->delete($db->quoteName('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations'))
+				->where($conditions);
+			$db->setQuery($query)->execute();
+		}
 	}
 
 	/**
@@ -1842,7 +2105,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		$product_relationships = [];
 		foreach ($result as $relationship)
 		{
-			$product_relationships[$relationship['jshopping_product_id']] = $relationship['bitrix24_product_id'];
+			$product_relationships[$relationship['jshopping_product_id']]['bitrix24_product_id'] = $relationship['bitrix24_product_id'];
+			$product_relationships[$relationship['jshopping_product_id']]['bitrix24_product_main_variaton_id'] = $relationship['bitrix24_product_main_variaton_id'];
 		}
 
 		return $product_relationships;
@@ -1899,6 +2163,83 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		return $resultBitrix24;
 
 
+	}
+
+	/**
+	 * Возвращает список товаров Битрикс 24 из API
+	 *
+	 * @since 3.1.0
+	 */
+	public function getBitrix24ProductsVariations()
+	{
+		if ($this->params->get('use_bitrix24_product_variants', 0) == 1)
+		{
+			$product_pagination_start = Factory::getApplication()->getInput()->get('start', 0);
+			$b24_parent_product_id = Factory::getApplication()->getInput()->get('b24_parent_product_id', 0);
+			$request_options = [
+				'select' => [
+					'id', 'iblockId', 'name', 'detailPicture', 'price', 'quantity', 'xmlId'
+				],
+				'filter' => [
+					'iblockId' => $this->params->get('bitrix24_products_variants_store_iblock_id')
+				],
+				'start'  => $product_pagination_start
+			];
+
+			if($b24_parent_product_id){
+				$request_options['filter']['parentId'] = $b24_parent_product_id;
+			}
+
+			$resultBitrix24 = CRest::call("catalog.product.list", $request_options);
+
+			return $resultBitrix24;
+		}
+
+		return [];
+	}
+
+
+	/**
+	 * Получаем сопоставления атрибутов JoomSHopping и вариаций товара Битрикс 24
+	 * @param $product_id int
+	 * @param $product_attr_id int
+	 *
+	 * @return mixed
+	 *
+	 * @since 3.1.0
+	 */
+	public function getJshoppingAttrToVariationId($product_id, $product_attr_id)
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		// Выдергиваем из базы
+		$query = $db->getQuery(true);
+		$query->select('*')
+			->from($db->quoteName('#__wt_jshopping_bitrix24_pro_prod_attr_to_variations'))
+			->where($db->quoteName('product_id') . ' = ' . $db->quote($product_id))
+			->where($db->quoteName('product_attr_id') . ' = ' . $db->quote($product_attr_id));
+		// Приходит 0, если нет выборки
+		return $db->setQuery($query)->loadAssoc();
+	}
+
+
+	/**
+	 * @param   string  $order_item_attribute serialized JoomShopping order item active attribute
+	 *
+	 * @return array
+	 *
+	 * @since 3.1.0
+	 */
+	public function getJShoppingActiveProductAttributeInOrder($product_id, string $order_item_attribute){
+		$attributes = unserialize($order_item_attribute);
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+
+		$where = "";
+		foreach($attributes as $k=>$v){
+			$where.=" and PA.attr_".(int)$k." = ".(int)$v;
+		}
+		$query = "select PA.product_attr_id from `#__jshopping_products_attr` as PA where PA.product_id=".(int)$product_id." ".$where;
+		return (array) $db->setQuery($query)->loadAssoc();
 	}
 
 	/**

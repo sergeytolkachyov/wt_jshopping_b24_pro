@@ -20,10 +20,10 @@ use Joomla\CMS\Form\Field\ListField;
 
 FormHelper::loadFieldClass('list');
 
-class B24StoreListField extends ListField
+class B24CatalogCatalogListField extends ListField
 {
 
-	protected $type = 'B24StoreList';
+	protected $type = 'B24CatalogCatalogList';
 
 	protected function getOptions()
 	{
@@ -38,14 +38,18 @@ class B24StoreListField extends ListField
 			if (!empty($crm_host) && !empty($webhook_secret) && !empty($crm_assigned_id))
 			{
 				// Список товарных каталогов
-				$resultBitrix24 = CRest::call("crm.catalog.list", []);
+				$resultBitrix24 = CRest::call("catalog.catalog.list", [
+					'select' => [
+						"id", "name", "iblockTypeId", "iblockId","skuPropertyId"
+					]
+				]);
 
 				$options = array();
 				if (isset($resultBitrix24["result"]))
 				{
-					foreach ($resultBitrix24["result"] as $store)
+					foreach ($resultBitrix24['result']['catalogs'] as $catalog)
 					{
-						$options[] = HTMLHelper::_('select.option', $store["ID"], $store["NAME"]);
+						$options[] = HTMLHelper::_('select.option', $catalog["iblockId"], $catalog["name"]);
 					}
 
 					return $options;
