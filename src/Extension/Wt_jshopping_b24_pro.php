@@ -1283,7 +1283,6 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	 */
 	public function onBeforeSendRadicalForm($clear, $input, $params)
 	{
-
 		/**
 		 * Bitrix24 CRest SDK
 		 */
@@ -1298,7 +1297,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		foreach ($clear as $key => $value)
 		{
 
-			if ($key == "PHONE" || $key == "EMAIL")
+			if ($key == "PHONE" || $key == "EMAIL" || $key == "phone" || $key == "email")
 			{
 
 				/*
@@ -1313,7 +1312,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 						$phone_or_email_iterator = "n" . $k;
 
 
-						$qr["fields"][$key][$phone_or_email_iterator] = array(
+						$qr["fields"][strtoupper($key)][$phone_or_email_iterator] = array(
 							"VALUE"      => $phone_or_email,
 							"VALUE_TYPE" => "WORK",
 						);
@@ -1327,7 +1326,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 				else
 				{
-					$qr["fields"][$key]["n0"] = array(
+					$qr["fields"][strtoupper($key)]["n0"] = array(
 						"VALUE"      => $value,
 						"VALUE_TYPE" => "WORK",
 					);
@@ -1350,7 +1349,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 				}
 				else
 				{
-					$qr["fields"][$key] = $value;
+					$qr["fields"][strtoupper($key)] = $value;
 				}
 
 
@@ -1358,8 +1357,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		}//end foreach Process form data
 
 		/**
-		* Set assigned id form plugin params
-		*/
+		 * Set assigned id form plugin params
+		 */
 
 		if (!empty($this->params->get("assigned_by_id")))
 		{
@@ -1367,13 +1366,19 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 		}
 
 		/**
-		* Lead source form plugin params
-		*/
+		 * Lead source form plugin params
+		 */
 		$qr["fields"]["SOURCE_ID"] = $this->params->get("lead_source");
-		$qr["fields"]["COMMENTS"]  .= "<br/>" . $input["pagetitle"] . "<br/><a href='" . $input["url"] . "'>" . $input["url"] . "</a>";
+
+		if(isset($qr["fields"]["COMMENTS"]) && !empty($qr["fields"]["COMMENTS"])){
+			$qr["fields"]["COMMENTS"]  .= "<br/>" . $input["pagetitle"] . "<br/><a href='" . $input["url"] . "'>" . $input["url"] . "</a>";
+		} else {
+			$qr["fields"]["COMMENTS"]  = "<br/>" . $input["pagetitle"] . "<br/><a href='" . $input["url"] . "'>" . $input["url"] . "</a>";
+		}
+
 		/**
-		* Add UTMs into array
-		*/
+		 * Add UTMs into array
+		 */
 
 		$this->checkUtms($qr);
 
