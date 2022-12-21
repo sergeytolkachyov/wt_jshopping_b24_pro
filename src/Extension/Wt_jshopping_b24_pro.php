@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     3.1.1
+ * @version     3.1.2
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -1865,6 +1865,9 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 	public function onBeforeDisplayEditProductView($view)
 	{
 		$product_id = $view->product->product_id;
+		if(!$product_id) {
+			return;
+		}
 		$db         = Factory::getContainer()->get('DatabaseDriver');
 		$query      = $db->getQuery(true);
 		$query->select('bitrix24_product_id');
