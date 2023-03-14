@@ -1847,7 +1847,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin
 			);
 		}
 
-		echo '</div></div>';
+		echo '</div></div></div>';
 
 
 	}
