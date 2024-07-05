@@ -332,7 +332,7 @@
         </fields>
     </config>
     <updateservers>
-        <server type="extension" name="Web Tolk Update Server - JoomShopping Bitrix 24">https://web-tolk.ru/component/swjprojects/jupdate?element=wt_jshopping_b24_pro</server>
+        <server type="extension" name="WebTolk Update Server - JoomShopping Bitrix 24">https://web-tolk.ru/component/swjprojects/jupdate?element=wt_jshopping_b24_pro</server>
     </updateservers>
     <changelogurl>https://web-tolk.ru/jchangelog?element=wt_jshopping_b24_pro</changelogurl>
 </extension>
