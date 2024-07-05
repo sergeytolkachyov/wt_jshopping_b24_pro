@@ -4,10 +4,10 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru/</authorUrl>
-	<creationDate>21/12/2022</creationDate>
+	<creationDate>July 2024</creationDate>
     <copyright>Sergey Tolkachyov</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>3.1.2</version>
+    <version>3.1.3</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <namespace path="src">Joomla\Plugin\System\Wt_jshopping_b24_pro</namespace>
 	<scriptfile>script.php</scriptfile>
@@ -23,10 +23,10 @@
         <folder>sql</folder>
     </files>
 	<languages folder="language" client="administrator">
-        <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.ini</language>
-        <language tag="ru-RU">ru-RU/ru-RU.plg_system_wt_jshopping_b24_pro.ini</language>
-        <language tag="en-GB">en-GB/en-GB.plg_system_wt_jshopping_b24_pro.sys.ini</language>
-        <language tag="ru-RU">ru-RU/ru-RU.plg_system_wt_jshopping_b24_pro.sys.ini</language>
+        <language tag="en-GB">en-GB/plg_system_wt_jshopping_b24_pro.ini</language>
+        <language tag="ru-RU">ru-RU/plg_system_wt_jshopping_b24_pro.ini</language>
+        <language tag="en-GB">en-GB/plg_system_wt_jshopping_b24_pro.sys.ini</language>
+        <language tag="ru-RU">ru-RU/plg_system_wt_jshopping_b24_pro.sys.ini</language>
     </languages>
     <install>
         <sql>
@@ -332,6 +332,7 @@
         </fields>
     </config>
     <updateservers>
-        <server type="extension" name="Web Tolk Update Server - JoomShopping Bitrix 24">https://web-tolk.ru/component/swjprojects/jupdate.html?element=wt_jshopping_b24_pro</server>
+        <server type="extension" name="Web Tolk Update Server - JoomShopping Bitrix 24">https://web-tolk.ru/component/swjprojects/jupdate?element=wt_jshopping_b24_pro</server>
     </updateservers>
+    <changelogurl>https://web-tolk.ru/jchangelog?element=wt_jshopping_b24_pro</changelogurl>
 </extension>

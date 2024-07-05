@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       WT JoomShopping B24 PRO
- * @version       2.3.0
+ * @version       3.1.3
  * @Author        Sergey Tolkachyov, https://web-tolk.ru
  * @copyright     Copyright (C) 2020 Sergey Tolkachyov
  * @license       GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -48,7 +48,7 @@ class PlugininfoField extends NoteField
 	{
 
 		$wtb24_plugin_info = simplexml_load_file(JPATH_SITE . "/plugins/system/wt_jshopping_b24_pro/wt_jshopping_b24_pro.xml");
-		$wa                = Factory::getDocument()->getWebAssetManager()->addInlineStyle('
+		$wa                = Factory::getApplication()->getDocument()->getWebAssetManager()->addInlineStyle('
 			#web_tolk_link {
 			text-align: center;
 			}
@@ -66,10 +66,8 @@ class PlugininfoField extends NoteField
 
 			if (!empty($crm_host) && !empty($webhook_secret) && !empty($crm_assigned_id))
 			{
-				//include_once(JPATH_SITE . "/plugins/system/wt_jshopping_b24_pro/lib/crest.php");
 
 				$resultBitrix24 = CRest::call("profile", ["id" => $crm_assigned_id]);
-
 
 				if (isset($resultBitrix24["result"]))
 				{
@@ -139,7 +137,7 @@ class PlugininfoField extends NoteField
 					
 					</div>
 					<div class="card-body">
-						' . Text::_("PLG_WT_JSHOPPING_B24_PRO_DESC2") . '
+						' . Text::_('PLG_WT_JSHOPPING_B24_PRO_DESC2') . '
 					</div>
 					<div class="card-footer ps-4">
 						' . $webhook_info . '
@@ -165,5 +163,3 @@ class PlugininfoField extends NoteField
 	}
 
 }
-
-?>

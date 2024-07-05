@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     3.0.0
+ * @version     3.1.3
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
 use Joomla\CMS\Form\Field\ListField;
@@ -44,24 +45,20 @@ class B24CatalogCatalogListField extends ListField
 					]
 				]);
 
-				$options = array();
+				$options = [];
 				if (isset($resultBitrix24["result"]))
 				{
 					foreach ($resultBitrix24['result']['catalogs'] as $catalog)
 					{
 						$options[] = HTMLHelper::_('select.option', $catalog["iblockId"], $catalog["name"]);
 					}
-
-					return $options;
-
 				}
 				elseif (isset($resultBitrix24['error']))
 				{
-					Factory::getApplication()->enqueueMessage($resultBitrix24['error'] . " " . $resultBitrix24['error_description'], 'error');
-
-					return $options;
+					$options[] = HTMLHelper::_('select.option', '0', Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_CATALOGCATALOGLIST_FIELD_WRONG_CRM_SCOPE'));
 				}
 
+				return $options;
 			}
 		}
 	}

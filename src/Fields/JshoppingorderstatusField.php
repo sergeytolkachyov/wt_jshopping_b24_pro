@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping SW Projects
- * @version     1.0.0
+ * @version     3.1.3
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -34,7 +34,7 @@ class JshoppingorderstatusField extends ListField
 			$db->setQuery($query);
 			$order_statuses = $db->loadAssocList();
 			$name = 'name_'.$current_lang;
-			$options = array();
+			$options = [];
 			if (!empty($order_statuses))
 			{
 				foreach ($order_statuses as $order_status)
@@ -46,7 +46,5 @@ class JshoppingorderstatusField extends ListField
 			return $options;
 		}
 
-
 	}
 }
-?>

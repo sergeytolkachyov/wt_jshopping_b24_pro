@@ -1,7 +1,7 @@
 <?php
 /**
  * @package     WT JoomShopping B24 PRO
- * @version     2.5.2
+ * @version     3.1.3
  * @Author Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2020 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -86,4 +86,3 @@ class B24ldealcategoryField extends ListField
 		}
 	}
 }
-?>
