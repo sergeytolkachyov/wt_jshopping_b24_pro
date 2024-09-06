@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     WT JShopping Bitrix24 PRO
+ * @package       WT JShopping Bitrix 24 PRO
  * @copyright   Copyright (C) 2020-2024 Sergey Tolkachyov. All rights reserved.
- * @author      Sergey Tolkachyov
- * @link        https://web-tolk.ru
- * @version     3.1.3
+ * @author     Sergey Tolkachyov
+ * @link       https://web-tolk.ru
+ * @version     3.1.4
  * @license     GNU General Public License version 2 or later
  */
 declare(strict_types=1);

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package     WT JoomShopping B24 PRO
- * @version     3.1.3
+ * @package       WT JShopping Bitrix 24 PRO
+ * @version     3.1.4
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html

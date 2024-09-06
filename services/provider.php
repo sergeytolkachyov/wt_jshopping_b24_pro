@@ -1,6 +1,6 @@
 <?php
 /**
- *  @package   WT JoomShopping Bitrix24 PRO
+ *  @package       WT JShopping Bitrix 24 PRO
  *  @copyright Copyright Sergey Tolkachyov
  *  @license   GNU General Public License version 3, or later
  */
