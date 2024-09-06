@@ -7,7 +7,7 @@
 	<creationDate>06.09.2024</creationDate>
     <copyright>Copyright (c) 2020 - 2024 Sergey Tolkachyov. All rights reserved.</copyright>
     <license>GNU General Public License v3.0</license>
-    <version>3.1.4</version>
+    <version>3.2.0</version>
     <description>PLG_WT_JSHOPPING_B24_PRO_DESC</description>
     <namespace path="src">Joomla\Plugin\System\Wt_jshopping_b24_pro</namespace>
 	<scriptfile>script.php</scriptfile>
@@ -146,7 +146,7 @@
                     <option value="0">JNO</option>
                 </field>
             </fieldset>
-            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_LEAD_SETTINGS" description="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM_DESC">
+            <fieldset name="leadsettings" label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SETTINGS" description="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM_DESC">
                 <field name="fields"
                        label="PLG_WT_JSHOPPING_B24_PRO_LEAD_SUBFORM"
                        type="subform"
@@ -168,7 +168,7 @@
                 <field name="source_description"  type="textarea"  label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_SOURCE_DESCRIPTION"/>
 				
             </fieldset>
-            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
+            <fieldset name="productsettings" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS">
                 <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS_HEADER" description="PLG_WT_JSHOPPING_B24_PRO_PRODUCT_SETTINGS_PRODUCTS_VS_PRODUCT_ROWS" class="alert alert-info"/>
                 <field type="note" label="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT_HEADER" description="PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_ROWS_ALERT" class="alert alert-warning"/>
 
@@ -270,8 +270,36 @@
                     <option value="0">JNO</option>
                 </field>
             </fieldset>
-            <fieldset name="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
-                <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="thirdpartyintegrations" name="thirdpartyintegrations"/>
+            <fieldset name="thirdpartyintegrations" label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
+                <fieldset name="thirdpartyintegrationsfieldset" label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS">
+                    <field addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields" type="thirdpartyintegrations" name="thirdpartyintegrations"/>
+                </fieldset>
+                <fieldset name="radicalform" label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS_RADICAL_FORM">
+                    <field type="radio"
+                           name="radical_form_add_page_url"
+                           label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS_RADICAL_FORM_ADD_PAGE_URL"
+                           default="0"
+                           class="btn-group btn-group-yesno">
+                        <option value="1">JYES</option>
+                        <option value="0">JNO</option>
+                    </field>
+                    <field type="radio"
+                           name="radical_form_add_page_title"
+                           label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS_RADICAL_FORM_ADD_PAGE_TITLE"
+                           default="0"
+                           class="btn-group btn-group-yesno">
+                        <option value="1">JYES</option>
+                        <option value="0">JNO</option>
+                    </field>
+                    <field type="radio"
+                           name="radical_form_add_files"
+                           label="PLG_WT_JSHOPPING_B24_PRO_THIRDPARTYINTEGRATIONS_RADICAL_FORM_ADD_FILES"
+                           default="0"
+                           class="btn-group btn-group-yesno">
+                        <option value="1">JYES</option>
+                        <option value="0">JNO</option>
+                    </field>
+                </fieldset>
             </fieldset>
             <fieldset name="Inbound_Bitrix24">
                 <!-- Входящая интеграция с Битрикс 24-->

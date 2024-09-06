@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version     3.1.4
+ * @version     3.2.0
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -474,15 +474,15 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 			{
 				$b24_comment .= $item->product_name . '<br/>';
 			}
-			if ($this->params->get('ean') == 1)
+			if ($this->params->get('ean') == 1 && !empty($item->ean))
 			{
 				$b24_comment .= Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_EAN') . ': ' . $item->ean . '<br/>';
 			}
-			if ($this->params->get('manufacturer_code') == 1)
+			if ($this->params->get('manufacturer_code') == 1 && !empty($item->manufacturer_code))
 			{
 				$b24_comment .= Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_JSHOPPING_MANUFACTURER_CODE') . ': ' . $item->manufacturer_code . '<br/>';
 			}
-			if ($this->params->get('product_weight') == 1)
+			if ($this->params->get('product_weight') == 1 && !empty($item->weight))
 			{
 				$b24_comment .= Text::_('PLG_WT_JSHOPPING_B24_PRO_B24_LEAD_PRODUCT_WEIGHT') . ': ' . $item->weight . '<br/>';
 			}
@@ -1336,17 +1336,35 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		 * Lead source form plugin params
 		 */
 		$qr['fields']['SOURCE_ID'] = $this->params->get('lead_source');
-		/**
-		 * Add uploaded files to comment
-		 */
-		$fileupload = '';
-		if(isset($input['fileupload']) && !empty($input['fileupload']))
+		$comment = '';
+
+		// Add page title to comment
+		if ($this->params->get('radical_form_add_page_title'))
 		{
-			$fileupload	= $input['fileupload'];
-			unset($input['fileupload']);
+			$comment .= '<br/>' . $input['pagetitle'];
 		}
 
-		$comment = '<br/>' . $input['pagetitle'] . '<br/>'.HTMLHelper::link($input['url'], $input['url']).'<br/>'.$fileupload;
+		// Add page url to comment
+		if ($this->params->get('radical_form_add_page_url'))
+		{
+			$comment .= '<br/>'.HTMLHelper::link($input['url'], $input['url']);
+		}
+
+		// Add link to uploaded files to comment
+		if ($this->params->get('radical_form_add_files'))
+		{
+			/**
+			 * Add uploaded files to comment
+			 */
+			$fileupload = '';
+			if(isset($input['fileupload']) && !empty($input['fileupload']))
+			{
+				$fileupload	= $input['fileupload'];
+				unset($input['fileupload']);
+			}
+
+			$comment .= (!empty($fileupload) ? '<br/>'.$fileupload : '');
+		}
 
 		if(isset($qr['fields']['COMMENTS']) && !empty($qr['fields']['COMMENTS']))
 		{
