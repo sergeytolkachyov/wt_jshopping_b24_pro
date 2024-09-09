@@ -27,6 +27,7 @@
 
 use Joomla\CMS\Factory;
 
+\defined('_JEXEC') or die;
 
 if($section == 'joomshopping')
 {

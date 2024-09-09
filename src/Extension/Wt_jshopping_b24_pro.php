@@ -10,7 +10,7 @@
 
 // No direct access
 namespace Joomla\Plugin\System\Wt_jshopping_b24_pro\Extension;
-defined('_JEXEC') or die;
+\defined('_JEXEC') or die;
 
 use Joomla\Application\SessionAwareWebApplicationInterface;
 use Joomla\CMS\Form\Form;
