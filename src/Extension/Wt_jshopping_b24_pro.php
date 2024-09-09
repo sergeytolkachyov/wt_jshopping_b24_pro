@@ -24,6 +24,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
+use Joomla\Filesystem\Folder;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
 use SimpleXMLElement;
 
@@ -769,6 +770,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 				$this->prepareDebugInfo('Requisites - Requisites array to send to functions (address, city, country etc.)', $requisites);
 			}
 
+			$this->customPreprocess($qr, $order, $product_rows);
 
 			if ($plugin_mode == 'deal')
 			{
@@ -788,6 +790,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		}
 		else
 		{ // Простой лид
+
+			$this->customPreprocess($qr, $order, $product_rows);
 			$b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
 		}
 
@@ -2307,5 +2311,41 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		$priority = 'Log::' . $priority;
 		Log::add($data, $priority, 'plg_system_wt_jshopping_b24_pro');
 
+	}
+
+
+	/**
+	 * Custom preprocess data before sending it to Bitrix 24.
+	 * Custom hadlers are placed in `/plugins/system/wt_jshopping_b24_pro/src/Custompreprocess`
+	 * and uses via `require_once`. You can place here any separate files you need.
+	 *
+	 * @param array $qr
+	 * @param object $order JoomShopping order
+	 * @param array $product_rows
+	 *
+	 *
+	 * @since 3.2.0
+	 */
+	private function customPreprocess(&$qr, $order, &$product_rows)
+	{
+		/**
+		 * Include files with custom SEO variables and overrides from
+		 * plugins/system/wt_jshopping_b24_pro/src/Custompreprocess
+		 */
+		$preprocess_folder = JPATH_SITE . '/plugins/system/wt_jshopping_b24_pro/src/Custompreprocess';
+		if (Folder::exists($preprocess_folder))
+		{
+			$custom_preprocessors = Folder::files($preprocess_folder);
+			if ($this->params->get('show_debug') == 1)
+			{
+				$this->prepareDebugInfo('Custom preprocess folder found', $preprocess_folder);
+				$this->prepareDebugInfo('Custom variables files found (' . count($custom_preprocessors) . ')', $custom_preprocessors);
+			}
+
+			foreach ($custom_preprocessors as $preprocessor)
+			{
+				require_once($preprocess_folder.'/' . $preprocessor);
+			}
+		}
 	}
 }
