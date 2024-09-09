@@ -768,9 +768,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 				$this->prepareDebugInfo('Contact - contact array to send to functions (name, phone, email etc.)', $contact);
 				$this->prepareDebugInfo('Requisites - Requisites array to send to functions (address, city, country etc.)', $requisites);
 			}
-
-			$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
-
+			/**
+			 * Preprocess data before sending to Bitrix 24
+			 */
+			if($this->params->get('enable_custom_preprocessing', 0))
+			{
+				$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
+			}
 			if ($plugin_mode == 'deal')
 			{
 				/**
@@ -790,7 +794,13 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		else
 		{ // Простой лид
 
-			$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
+			/**
+			 * Preprocess data before sending to Bitrix 24
+			 */
+			if($this->params->get('enable_custom_preprocessing', 0))
+			{
+				$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
+			}
 			$b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
 		}
 
@@ -1399,10 +1409,16 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		$this->checkUtms($qr);
 
 		/**
+		 * Preprocess data before sending to Bitrix 24
+		 */
+		if($this->params->get('enable_custom_preprocessing', 0))
+		{
+			$qr = $this->customPreprocess('radicalform', ['qr' => $qr, 'clear' => $clear, 'input' => $input, 'radicalform_params' => $params]);
+		}
+
+		/**
 		 * Create a lead
 		 */
-		$qr = $this->customPreprocess('radicalform', ['qr' => $qr, 'clear' => $clear, 'input' => $input, 'radicalform_params' => $params]);
-
 		$result = $this->addLead($qr, [], 0, null);
 	}
 
@@ -2338,14 +2354,14 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 	 *
 	 * You **MUST** return the `$qr` array
 	 *
-	 * @param string $section The context where we fire custom preprocess
+	 * @param string $context The context where we fire custom preprocess
 	 * @param array $data All data for preprocessing
 	 *
 	 * @return array
 	 *
 	 * @since 3.2.0
 	 */
-	private function customPreprocess($section = '', $data = []): array
+	private function customPreprocess($context = '', $data = []): array
 	{
 		$qr = $data['qr'];
 		/**
@@ -2355,7 +2371,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		$preprocess_folder = JPATH_SITE . '/plugins/system/wt_jshopping_b24_pro/src/Custompreprocess';
 		if (Folder::exists($preprocess_folder))
 		{
-			$custom_preprocessors = Folder::files($preprocess_folder);
+			// Get only *.php files
+			$custom_preprocessors = Folder::files($preprocess_folder,'.php');
 			if ($this->params->get('debug') == 1)
 			{
 				$this->prepareDebugInfo('Custom preprocess folder found', $preprocess_folder);

@@ -4,7 +4,7 @@
     <author>Sergey Tolkachyov</author>
     <authorEmail>info@web-tolk.ru</authorEmail>
     <authorUrl>https://web-tolk.ru</authorUrl>
-	<creationDate>06.09.2024</creationDate>
+	<creationDate>09.09.2024</creationDate>
     <copyright>Copyright (c) 2020 - 2024 Sergey Tolkachyov. All rights reserved.</copyright>
     <license>GNU General Public License v3.0</license>
     <version>3.2.0</version>
@@ -356,6 +356,24 @@
                        showon="bitrix24_inbound_integration:1[AND]bitrix24_inbound_update_jshopping_order_statuses:1"
                        groupByFieldset="true"
                 />
+            </fieldset>
+            <fieldset name="preprocessing"
+                      label="PLG_WT_JSHOPPING_B24_PRO_ENABLE_CUSTOM_PREPROCESSING_FIELDSET_LABEL"
+                      description="PLG_WT_JSHOPPING_B24_PRO_ENABLE_CUSTOM_PREPROCESSING_FIELDSET_DESC">
+                <field type="radio"
+                       name="enable_custom_preprocessing"
+                       label="PLG_WT_JSHOPPING_B24_PRO_ENABLE_CUSTOM_PREPROCESSING"
+                       description="PLG_WT_JSHOPPING_B24_PRO_ENABLE_CUSTOM_PREPROCESSING_DESC"
+                       default="0" class="btn-group btn-group-yesno">
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field type="preprocessingfileslist"
+                       name="preprocessingfileslist"
+                       label="PLG_WT_JSHOPPING_B24_PRO_ENABLE_CUSTOM_PREPROCESSINGFILESLIST"
+                       addfieldprefix="Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields"
+                       showon="enable_custom_preprocessing:1"
+                        />
             </fieldset>
         </fields>
     </config>
