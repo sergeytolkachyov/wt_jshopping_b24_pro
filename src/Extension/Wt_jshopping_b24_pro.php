@@ -1354,21 +1354,37 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 			$comment .= '<br/>'.HTMLHelper::link($input['url'], $input['url']);
 		}
 
-		// Add link to uploaded files to comment
-		if ($this->params->get('radical_form_add_files'))
-		{
-			/**
-			 * Add uploaded files to comment
-			 */
-			$fileupload = '';
-			if(isset($input['fileupload']) && !empty($input['fileupload']))
-			{
-				$fileupload	= $input['fileupload'];
-				unset($input['fileupload']);
-			}
+        // Add link to uploaded files to comment
+        if ($this->params->get('radical_form_add_files'))
+        {
+            /**
+             * Add uploaded files to comment
+             */
+            $fileupload = '';
+            $url = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+            $uniq = $input['uniq'];
 
-			$comment .= (!empty($fileupload) ? '<br/>'.$fileupload : '');
-		}
+            // Get the right directory with uploaded files
+
+            $downloadPath = $params->get('downloadpath');
+            $folders = Folder::folders($params->get('uploadstorage') . '/rf-' . $uniq);
+
+            foreach ($folders as $folder)
+            {
+                //прикрепляем файлы
+                $filesForAttachment = Folder::files($params->get('uploadstorage') . '/rf-' . $uniq . "/" . $folder, ".", false, true);
+
+                foreach ($filesForAttachment as $file)
+                {
+
+                    $fileupload .= $params->get('delimiter',"<br />")."{$url}/{$downloadPath}/{$uniq}/{$folder}/".basename($file);
+
+                }
+            }
+
+
+            $comment .= (!empty($fileupload) ? '<br/>'.$fileupload : '');
+        }
 
 		if(isset($qr['fields']['COMMENTS']) && !empty($qr['fields']['COMMENTS']))
 		{
