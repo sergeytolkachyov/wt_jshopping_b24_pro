@@ -18,13 +18,12 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Filesystem\Folder;
+use Joomla\CMS\Filesystem\Folder;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
 use SimpleXMLElement;
 
@@ -770,7 +769,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 				$this->prepareDebugInfo('Requisites - Requisites array to send to functions (address, city, country etc.)', $requisites);
 			}
 
-			$this->customPreprocess($qr, $order, $product_rows);
+			$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
 
 			if ($plugin_mode == 'deal')
 			{
@@ -791,7 +790,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		else
 		{ // Простой лид
 
-			$this->customPreprocess($qr, $order, $product_rows);
+			$qr = $this->customPreprocess('joomshopping', ['qr' => $qr, 'order' => $order, 'product_rows' => $product_rows]);
 			$b24result = $this->addLead($qr, $product_rows, $debug, $order->order_id);
 		}
 
@@ -1402,6 +1401,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		/**
 		 * Create a lead
 		 */
+		$qr = $this->customPreprocess('radicalform', ['qr' => $qr, 'clear' => $clear, 'input' => $input, 'radicalform_params' => $params]);
+
 		$result = $this->addLead($qr, [], 0, null);
 	}
 
@@ -2333,18 +2334,20 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Custom preprocess data before sending it to Bitrix 24.
 	 * Custom hadlers are placed in `/plugins/system/wt_jshopping_b24_pro/src/Custompreprocess`
-	 * and uses via `require_once`.
-	 * You can place here any separate files you need.
+	 * and uses via `require_once`. You can place here any separate files you need.
 	 *
-	 * @param array $qr
-	 * @param object $order JoomShopping order
-	 * @param array $product_rows
+	 * You **MUST** return the `$qr` array
 	 *
+	 * @param string $section The context where we fire custom preprocess
+	 * @param array $data All data for preprocessing
+	 *
+	 * @return array
 	 *
 	 * @since 3.2.0
 	 */
-	private function customPreprocess(&$qr, $order, &$product_rows)
+	private function customPreprocess($section = '', $data = []): array
 	{
+		$qr = $data['qr'];
 		/**
 		 * Include files with custom SEO variables and overrides from
 		 * plugins/system/wt_jshopping_b24_pro/src/Custompreprocess
@@ -2353,7 +2356,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 		if (Folder::exists($preprocess_folder))
 		{
 			$custom_preprocessors = Folder::files($preprocess_folder);
-			if ($this->params->get('show_debug') == 1)
+			if ($this->params->get('debug') == 1)
 			{
 				$this->prepareDebugInfo('Custom preprocess folder found', $preprocess_folder);
 				$this->prepareDebugInfo('Custom variables files found (' . count($custom_preprocessors) . ')', $custom_preprocessors);
@@ -2364,5 +2367,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 				require_once($preprocess_folder.'/' . $preprocessor);
 			}
 		}
+
+		return $qr;
 	}
 }
