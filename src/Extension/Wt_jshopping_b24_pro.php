@@ -2333,7 +2333,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 	/**
 	 * Custom preprocess data before sending it to Bitrix 24.
 	 * Custom hadlers are placed in `/plugins/system/wt_jshopping_b24_pro/src/Custompreprocess`
-	 * and uses via `require_once`. You can place here any separate files you need.
+	 * and uses via `require_once`.
+	 * You can place here any separate files you need.
 	 *
 	 * @param array $qr
 	 * @param object $order JoomShopping order
