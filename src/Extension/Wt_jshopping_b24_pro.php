@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version     3.2.0
+ * @version     3.2.1
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2022 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
@@ -1776,14 +1776,15 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 										  <text font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="32" id="svg_3" y="36.085949" x="8.152073" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#0fa2e6">Web</text>
 										  <text font-weight="bold" xml:space="preserve" text-anchor="start" font-family="Helvetica, Arial, sans-serif" font-size="32" id="svg_4" y="36.081862" x="74.239105" stroke-opacity="null" stroke-width="0" stroke="#000" fill="#384148">Tolk</text>
 										 </g>
-									</svg>
+									</svg> 
 						</a>
 					</div>
 					<div class="col-12 col-md-10">
 								<h4>WT JoomShopping Bitrix 24 PRO</h4>
 								<p>' . Text::_('PLG_WT_JSHOPPING_B24_PRO_BITRIX24_PRODUCT_EDIT_PAGE_PRODUCTS_CONNECTION_TAB_DESC') . '</p>
 					</div>
-				</div>';
+				</div>
+			</div>';
 
 		if ($this->params->get('bitrix24_inbound_integration', 0) == 1 &&
 			$this->params->get('bitrix24_inbound_update_jshopping_products_prices', 0) == 1 ||

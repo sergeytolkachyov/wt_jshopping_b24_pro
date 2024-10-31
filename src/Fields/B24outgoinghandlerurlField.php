@@ -1,7 +1,7 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version     3.2.0
+ * @version     3.2.1
  * @Author 		Sergey Tolkachyov, https://web-tolk.ru
  * @copyright   Copyright (C) 2021 Sergey Tolkachyov
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
