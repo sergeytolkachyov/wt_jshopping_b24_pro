@@ -5,7 +5,7 @@ defined( '_JEXEC' ) or die;
 	/**
 	 * @license     MIT License
 	 * @since 1.0
- 	 * @version 3.2.1
+ 	 * @version 3.2.2
 	 *  
 	 *  define:
 	 *      C_REST_WEB_HOOK_URL = 'https://rest-api.bitrix24.com/rest/1/doutwqkjxgc3mgc1/'  //url on creat Webhook
