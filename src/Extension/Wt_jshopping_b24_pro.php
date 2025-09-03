@@ -95,6 +95,8 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 			'onDisplayProductEditTabsEndTab' => 'onDisplayProductEditTabsEndTab',
 			'onDisplayProductEditTabsEnd'    => 'onDisplayProductEditTabsEnd',
 			'onBeforeDisplayEditProductView' => 'onBeforeDisplayEditProductView',
+			'onAfterSaveProduct'             => 'onAfterSaveProduct',
+			'onAfterRemoveProduct'           => 'onAfterRemoveProduct',
 		];
 	}
 
