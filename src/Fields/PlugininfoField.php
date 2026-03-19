@@ -1,9 +1,9 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version       3.2.2
+ * @version       3.2.3
  * @Author        Sergey Tolkachyov, https://web-tolk.ru
- * @copyright     Copyright (C) 2020 Sergey Tolkachyov
+ * @copyright     Copyright (c) 2020 - 2026 Sergey Tolkachyov. All rights reserved.
  * @license       GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
  * @since         2.3.0
  */
@@ -121,7 +121,7 @@ class PlugininfoField extends NoteField
 				</a>
 				</div>
 				<div class="col-10">
-					<div class="card-header bg-white p-1">
+					<div class="card-header bg-transparent p-1">
 					<span class="badge bg-success">v.' . $wtb24_plugin_info->version . '</span>
 					<span class="ms-auto"><svg width="150" height="27" viewBox="0 0 150 35" xmlns="http://www.w3.org/2000/svg">
 						<g fill="none">

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version       3.2.2
+ * @version       3.2.3
  * @Author        Sergey Tolkachyov, https://web-tolk.ru
- * @copyright     Copyright (C) 2020 Sergey Tolkachyov
+ * @copyright     Copyright (c) 2020 - 2026 Sergey Tolkachyov. All rights reserved.
  * @license       GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
  * @since         3.2.0
  */
@@ -12,7 +12,7 @@ namespace Joomla\Plugin\System\Wt_jshopping_b24_pro\Fields;
 
 \defined('_JEXEC') or die;
 
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Filesystem\Folder;
 use Joomla\CMS\Form\Field\NoteField;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;

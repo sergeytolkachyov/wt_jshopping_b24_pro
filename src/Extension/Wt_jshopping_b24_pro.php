@@ -1,9 +1,9 @@
 <?php
 /**
  * @package       WT JShopping Bitrix 24 PRO
- * @version     3.2.2
+ * @version     3.2.3
  * @Author      Sergey Tolkachyov, https://web-tolk.ru
- * @copyright   Copyright (C) 2022 Sergey Tolkachyov
+ * @copyright     Copyright (c) 2020 - 2026 Sergey Tolkachyov. All rights reserved.
  * @license     GNU/GPL http://www.gnu.org/licenses/gpl-2.0.html
  * @since       1.0.0
  */
@@ -23,7 +23,7 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\Event;
 use Joomla\Event\SubscriberInterface;
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Filesystem\Folder;
 use Joomla\Plugin\System\Wt_jshopping_b24_pro\Library\CRest;
 use SimpleXMLElement;
 
@@ -1058,7 +1058,7 @@ class Wt_jshopping_b24_pro extends CMSPlugin implements SubscriberInterface
 	 * @return bool
 	 *
 	 * @since 2.0.0
-	 * @link       https://web-tolk.ru
+	 * @link          https://web-tolk.ru
 	 */
 	private function updateContact(int $contact_id, array $upd_info, int $debug): bool
 	{

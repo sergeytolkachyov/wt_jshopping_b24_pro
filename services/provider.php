@@ -1,7 +1,7 @@
 <?php
 /**
  *  @package       WT JShopping Bitrix 24 PRO
- *  @copyright Copyright Sergey Tolkachyov
+ *  @copyright     Copyright (c) 2020 - 2026 Sergey Tolkachyov. All rights reserved.
  *  @license   GNU General Public License version 3, or later
  */
 
